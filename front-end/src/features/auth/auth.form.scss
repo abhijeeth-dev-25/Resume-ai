@@ -1,0 +1,99 @@
+/* Full page layout */
+
+main {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: black;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Form Card */
+
+.form-container {
+  width: 380px;
+  padding: 40px;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  text-align: center;
+
+  h1 {
+    margin-bottom: 25px;
+    color: #333;
+    font-weight: 600;
+  }
+}
+
+/* Form Layout */
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Input Group */
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+
+  label {
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: #555;
+    font-weight: 500;
+  }
+
+  input {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    transition: all 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: black;
+      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+    }
+  }
+}
+
+/* Button */
+
+.button {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.primary-button {
+  background: black;
+  color: white;
+  font-weight: 600;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(1.05);
+  }
+}
+
+/* Responsive */
+
+@media (max-width: 450px) {
+  .form-container {
+    width: 90%;
+    padding: 30px;
+  }
+}
