@@ -90,7 +90,7 @@ const preparationPlanSchema = new mongoose.Schema({
         type: String,
         required: [true, "Focus is required"]
     },
-    task: [{
+    tasks: [{
         type: String,
         required: [true, "Task is required"]
     }],
@@ -100,6 +100,9 @@ const interviewReportSchema = new mongoose.Schema({
     jobDescription : {
         type : String,
         required : [true, "job description is required"]
+    },
+    jobRole: {
+        type: String
     },
     resume : {
         type : String,

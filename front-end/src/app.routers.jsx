@@ -1,19 +1,28 @@
-import { createBrowserRouter } from 'react-router';
+import { createBrowserRouter, Navigate } from 'react-router';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Result from './pages/Result';
 
 export const router = createBrowserRouter([
     {
         path: '/',
-        element: <Home />
+        element: <Home />,
     },
     {
         path: '/login',
-        element: <Login />
+        element: <Login />,
     },
     {
         path: '/register',
-        element: <Register />
+        element: <Register />,
+    },
+    {
+        path: '/result',
+        element: <Result />,
+    },
+    {
+        path: '*',
+        element: <Navigate to="/" replace />,
     }
 ]);

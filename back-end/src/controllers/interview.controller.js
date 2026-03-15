@@ -29,7 +29,7 @@ async function generateInterViewReportController(req, res) {
         }
 
         const interviewReport = await InterviewReport.create({
-            user: req.user._id,
+            user: req.user.id,
             resume: resumeContent.text,
             selfDescription,
             jobDescription,
@@ -39,7 +39,16 @@ async function generateInterViewReportController(req, res) {
         res.status(201).json({
             success: true,
             message: "Interview report generated successfully",
+            report: {
+                jobRole:              interviewReport.jobRole,
+                matchScore:           interviewReport.matchScore,
+                technicalQuestions:   interviewReport.technicalQuestions,
+                behavioralQuestions:  interviewReport.behavioralQuestions,
+                skillGaps:            interviewReport.skillGaps,
+                preparationPlan:      interviewReport.preparationPlan,
+            }
         })
+
 
 
     } catch (error) {
@@ -52,6 +61,25 @@ async function generateInterViewReportController(req, res) {
     }
 }
 
+async function getMyReportsController(req, res) {
+    try {
+        const reports = await InterviewReport.find({ user: req.user.id })
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            reports
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch reports",
+            error: error.message
+        });
+    }
+}
+
 module.exports = {
-    generateInterViewReportController
+    generateInterViewReportController,
+    getMyReportsController
 }

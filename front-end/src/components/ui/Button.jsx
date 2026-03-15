@@ -11,17 +11,18 @@ const Button = ({
     disabled = false,
     className = '',
     fullWidth = false,
+    size = 'md',
     ...props
 }) => {
     return (
         <button
-            className={`btn btn-${variant} ${fullWidth ? 'btn-full' : ''} ${className}`}
+            className={`btn btn-${variant} btn-${size} ${fullWidth ? 'btn-full' : ''} ${className}`}
             onClick={onClick}
             type={type}
             disabled={disabled || isLoading}
             {...props}
         >
-            {isLoading ? <Loader2 className="btn-spinner" size={18} /> : null}
+            {isLoading && <Loader2 className="btn-spinner" size={16} />}
             <span className={isLoading ? 'btn-content-hidden' : 'btn-content'}>
                 {children}
             </span>

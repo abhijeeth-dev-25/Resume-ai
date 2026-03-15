@@ -1,82 +1,97 @@
 .input-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    width: 100%;
-    margin-bottom: 1rem;
+    gap: 0.4rem;
 }
 
 .input-label {
-    font-size: 0.875rem;
-    font-weight: 500;
+    font-size: 0.82rem;
+    font-weight: 600;
     color: var(--text-secondary);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
 }
 
 .input-container {
     position: relative;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
 }
 
 .input-icon {
     position: absolute;
-    left: 1rem;
+    left: 0.9rem;
+    top: 50%;
+    transform: translateY(-50%);
     color: var(--text-muted);
+    pointer-events: none;
     display: flex;
     align-items: center;
-    pointer-events: none;
+    transition: color var(--transition);
 }
 
 .input-field {
     width: 100%;
-    padding: 0.75rem 1rem;
-    font-family: var(--font-primary);
-    font-size: 0.95rem;
-    background-color: var(--bg-light);
-    border: 1px solid var(--border-color);
+    background: var(--bg-input);
+    border: 1.5px solid var(--border-color);
     border-radius: var(--radius-md);
     color: var(--text-primary);
-    transition: all 0.2s ease;
+    font-family: var(--font-primary);
+    font-size: 0.95rem;
+    padding: 0.75rem 1rem;
+    transition: all var(--transition);
     outline: none;
+    -webkit-appearance: none;
 
-    &::placeholder {
-        color: var(--text-muted);
+    &::placeholder { color: var(--text-muted); }
+
+    &:hover {
+        border-color: rgba(124, 58, 237, 0.4);
     }
 
-    &:focus,
-    &:active {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    &:focus {
+        background: var(--bg-input-focus);
+        border-color: var(--border-focus);
+        box-shadow: 0 0 0 3px var(--accent-glow);
+
+        ~ .input-icon, & + .input-icon {
+            color: var(--accent-light);
+        }
     }
 
     &.input-with-icon {
-        padding-left: 2.75rem;
+        padding-left: 2.6rem;
     }
 
     &.input-error {
-        border-color: var(--error-color);
-
-        &:focus {
-            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
-        }
+        border-color: var(--error);
+        background: var(--error-bg);
+        &:focus { box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.2); }
     }
+}
+
+// Fix icon color when focused (sibling selector trick)
+.input-container:focus-within .input-icon {
+    color: var(--accent-light);
+}
+
+.input-textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.6;
+    padding-top: 0.85rem;
 }
 
 .input-error-msg {
-    font-size: 0.75rem;
-    color: var(--error-color);
-    margin: 0;
+    font-size: 0.8rem;
+    color: var(--error);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
     animation: slideDown 0.2s ease;
 }
 
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-5px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.input-hint {
+    font-size: 0.8rem;
+    color: var(--text-muted);
 }

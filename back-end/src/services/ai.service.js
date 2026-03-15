@@ -5,6 +5,10 @@ const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_GEN_AI_API_KEY });
 const interviewReportSchema = {
     type: Type.OBJECT,
     properties: {
+        jobRole: {
+            type: Type.STRING,
+            description: "The primary job title or role mentioned in the job description (e.g., 'Senior Frontend Developer', 'Backend Engineer')"
+        },
         matchScore: {
             type: Type.NUMBER,
             description: "A score between 0 to 100 indicating how well the candidate's resume matches the job description"
@@ -69,7 +73,7 @@ const interviewReportSchema = {
             }
         }
     },
-    required: ["matchScore", "technicalQuestions", "behavioralQuestions", "skillGaps", "preparationPlan"]
+    required: ["jobRole", "matchScore", "technicalQuestions", "behavioralQuestions", "skillGaps", "preparationPlan"]
 };
 
 async function generateInterviewReport({ resume, jobDescription, selfDescription }) {

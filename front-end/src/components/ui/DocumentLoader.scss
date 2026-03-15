@@ -1,0 +1,177 @@
+.doc-loader-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem; /* Increased gap slightly to account for removed box padding */
+}
+
+/* 
+    Puzzle Container is exactly 118x118 
+    It bounds all translates precisely.
+*/
+.puzzle-container {
+    width: 118px;
+    height: 118px;
+    position: relative;
+    border-radius: var(--radius-sm);
+}
+
+.puzzle-block {
+    position: absolute;
+    top: 0; left: 0;
+    border-radius: 6px;
+    padding: 6px 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: var(--bg-panel);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    /* Adding transition makes the cubic-bezier jump much smoother if overlap occurs */
+}
+
+/* Shape specific classes */
+.block-sq { width: 34px; height: 34px; gap: 5px; }
+.block-hz { width: 76px; height: 34px; gap: 5px; }
+.block-vt { width: 34px; height: 76px; gap: 6px; }
+
+/* Placeholder lines representing AI extracting text */
+.puzzle-block .line {
+    height: 4px;
+    border-radius: 2px;
+    opacity: 0.8;
+}
+
+.block-sq .line-1 { width: 100%; }
+.block-sq .line-2 { width: 50%; }
+
+.block-hz .line-1 { width: 90%; }
+.block-hz .line-2 { width: 40%; }
+
+.block-vt .line-1 { width: 100%; }
+.block-vt .line-2 { width: 70%; }
+.block-vt .line-3 { width: 90%; }
+.block-vt .line-4 { width: 50%; }
+
+/* Colors and assignment */
+.block-v1 {
+    background: var(--violet-bg);
+    border: 1px solid var(--violet-border);
+    .line { background: var(--violet); }
+    animation: slideV1 6s infinite cubic-bezier(0.5, 0, 0.2, 1);
+    animation-delay: 0s;
+    z-index: 5;
+}
+
+.block-e {
+    background: var(--success-bg);
+    border: 1px solid var(--success-border);
+    .line { background: var(--success); }
+    animation: slideE 6s infinite cubic-bezier(0.5, 0, 0.2, 1);
+    animation-delay: 0.1s;
+    z-index: 4;
+}
+
+.block-a {
+    background: var(--warning-bg);
+    border: 1px solid var(--warning-border);
+    .line { background: var(--warning); }
+    animation: slideA 6s infinite cubic-bezier(0.5, 0, 0.2, 1);
+    animation-delay: 0.2s;
+    z-index: 3;
+}
+
+.block-v2 {
+    background: var(--violet-bg); 
+    border: 1px solid var(--violet-border);
+    .line { background: var(--violet); }
+    animation: slideV2 6s infinite cubic-bezier(0.5, 0, 0.2, 1);
+    animation-delay: 0.3s;
+    z-index: 2;
+}
+
+.block-r {
+    background: var(--error-bg);
+    border: 1px solid var(--error-border);
+    .line { background: var(--error); }
+    animation: slideR 6s infinite cubic-bezier(0.5, 0, 0.2, 1);
+    animation-delay: 0.4s;
+    z-index: 1;
+}
+
+/* 
+    Keyframes for staggered puzzle movement.
+    Grid anchors: 0px, 42px, 84px for x/y.
+*/
+
+/* block-v1: Square */
+@keyframes slideV1 {
+  0%, 15%  { transform: translate(0px, 0px); }
+  25%, 40% { transform: translate(84px, 0px); }
+  50%, 65% { transform: translate(42px, 42px); }
+  75%, 90% { transform: translate(0px, 0px); }
+  100%     { transform: translate(0px, 0px); }
+}
+
+/* block-e: Horizontal Rect */
+@keyframes slideE {
+  0%, 15%  { transform: translate(42px, 0px); }
+  25%, 40% { transform: translate(0px, 42px); }
+  50%, 65% { transform: translate(42px, 0px); }
+  75%, 90% { transform: translate(0px, 84px); }
+  100%     { transform: translate(42px, 0px); }
+}
+
+/* block-a: Vertical Rect */
+@keyframes slideA {
+  0%, 15%  { transform: translate(0px, 42px); }
+  25%, 40% { transform: translate(84px, 42px); }
+  50%, 65% { transform: translate(0px, 0px); }
+  75%, 90% { transform: translate(84px, 0px); }
+  100%     { transform: translate(0px, 42px); }
+}
+
+/* block-v2: Square */
+@keyframes slideV2 {
+  0%, 15%  { transform: translate(84px, 42px); }
+  25%, 40% { transform: translate(42px, 84px); }
+  50%, 65% { transform: translate(84px, 42px); }
+  75%, 90% { transform: translate(42px, 0px); }
+  100%     { transform: translate(84px, 42px); }
+}
+
+/* block-r: Horizontal Rect */
+@keyframes slideR {
+  0%, 15%  { transform: translate(42px, 84px); }
+  25%, 40% { transform: translate(0px, 0px); }
+  50%, 65% { transform: translate(0px, 84px); }
+  75%, 90% { transform: translate(0px, 42px); }
+  100%     { transform: translate(42px, 84px); }
+}
+
+@keyframes docShimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Bottom Text Styles */
+.doc-loader-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.4rem;
+
+    p {
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    span {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+}
