@@ -33,4 +33,5 @@ authRouter.get('/logout', authController.logoutUserController);
 authRouter.get('/get-me', authMiddleware.authUserMiddleware, authController.getMeController); // "Hey Express, when /get-me is called, first run the authUserMiddleware function to check if the user is authenticated, and if they are, then run the getMeController function to get the user's information."
 
 
+
 module.exports = authRouter;

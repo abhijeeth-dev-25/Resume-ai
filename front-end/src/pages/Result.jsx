@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import {
     ArrowLeft, Target, Zap, AlertTriangle, Calendar,
-    ChevronDown, ChevronUp
+    ChevronDown, ChevronUp, Sparkles, Loader2
 } from 'lucide-react';
+import { interviewService } from '../services/interview.service';
 import { useAuth } from '../context/AuthContext';
 import Button from '../components/ui/Button';
 import ThemeToggle from '../components/ui/ThemeToggle';
@@ -81,8 +82,31 @@ const Result = () => {
     const { logout } = useAuth();
 
     const [activeSection, setActiveSection] = useState('preparation');
+    const [downloading, setDownloading] = useState(false);
 
     const report = location.state?.report;
+
+    const handleDownloadResume = async () => {
+        if (!report?._id || downloading) return;
+
+        try {
+            setDownloading(true);
+            const blob = await interviewService.downloadResume(report._id);
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `Resume_${report._id}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Download failed:', error);
+            alert('Failed to download resume. Please try again.');
+        } finally {
+            setDownloading(false);
+        }
+    };
 
     if (!report) {
         return (
@@ -348,6 +372,26 @@ const Result = () => {
                             Behavioral Questions
                         </button>
                     </div>
+
+                    {/* Download Button */}
+                    <button 
+                        className={`download-btn ${downloading ? 'download-btn--loading' : ''}`}
+                        onClick={handleDownloadResume}
+                        disabled={downloading}
+                    >
+                        {downloading ? (
+                            <>
+                                <div className="download-btn-shimmer"></div>
+                                <Loader2 size={18} className="animate-spin" />
+                                <span>GENERATING PDF...</span>
+                            </>
+                        ) : (
+                            <>
+                                <Sparkles size={18} />
+                                <span>DOWNLOAD AI RESUME</span>
+                            </>
+                        )}
+                    </button>
                 </aside>
             </div>
         </div>

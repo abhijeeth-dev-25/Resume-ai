@@ -14,9 +14,6 @@ const Home = () => {
     const { user, logout, isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
-    // ── Auth guard: redirect unauthenticated users ─────────────────────────────
-    if (!isAuthenticated) return <Navigate to="/login" replace />;
-
     const [resumeFile, setResumeFile]         = useState(null);
     const [jobDescription, setJobDescription] = useState('');
     const [selfDescription, setSelfDescription] = useState('');
@@ -27,6 +24,7 @@ const Home = () => {
     const [loadingReports, setLoadingReports] = useState(true);
 
     useEffect(() => {
+        if (!isAuthenticated) return;
         const fetchReports = async () => {
             try {
                 const data = await interviewService.getMyReports();
@@ -38,7 +36,10 @@ const Home = () => {
             }
         };
         fetchReports();
-    }, []);
+    }, [isAuthenticated]);
+
+    // ── Auth guard: redirect unauthenticated users ─────────────────────────────
+    if (!isAuthenticated) return <Navigate to="/login" replace />;
 
     const validate = () => {
         const e = {};

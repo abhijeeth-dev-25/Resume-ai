@@ -21,5 +21,16 @@ export const interviewService = {
     getMyReports: async () => {
         const response = await api.get('/interview/my-reports');
         return response.data;
+    },
+
+    /**
+     * Download the AI-generated resume PDF
+     * @param {string} interviewReportId
+     */
+    downloadResume: async (interviewReportId) => {
+        const response = await api.post(`/interview/resume/pdf/${interviewReportId}`, {}, {
+            responseType: 'blob'
+        });
+        return response.data;
     }
 };

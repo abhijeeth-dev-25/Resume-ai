@@ -605,6 +605,87 @@
     }
 }
 
+/* ─── Download Button ───────────────────── */
+.download-btn {
+    width: 100%;
+    margin-top: auto;
+    background: linear-gradient(135deg, #FFB74D, #FFA726);
+    border: none;
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    color: #ffffff;
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 167, 38, 0.3);
+    transition: all var(--transition);
+    position: relative;
+    overflow: hidden;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 167, 38, 0.4);
+        background: linear-gradient(135deg, #FFA726, #FB8C00);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.9;
+    }
+
+    svg {
+        flex-shrink: 0;
+    }
+
+    span {
+        white-space: nowrap;
+    }
+}
+
+.download-btn--loading {
+    background: #FFB74D !important;
+}
+
+.download-btn-shimmer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(
+        90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.2) 50%, 
+        transparent 100%
+    );
+    animation: shimmer 1.5s infinite linear;
+}
+
+.animate-spin {
+    animation: spin 1s infinite linear;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(50%); }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
 /* ─── Animations ───────────────────────── */
 @keyframes fadeUp {
     from { opacity: 0; transform: translateY(16px); }
