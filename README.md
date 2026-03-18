@@ -1,4 +1,4 @@
-# Resume AI 🚀
+# Resume AI 
 
 ![Resume AI Hero](front-end/public/github%20hero.png)
 
