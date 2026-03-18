@@ -1,5 +1,7 @@
 # Resume AI 🚀
 
+![Resume AI Hero](front-end/public/github%20hero.png)
+
 An AI-powered application designed to help you analyze your resume against job descriptions and generate customized, professional resumes in PDF format. 
 
 Built with a **MERN-like stack** and integrated with **Google GenAI (Gemini API)** for intelligent processing and analysis.
