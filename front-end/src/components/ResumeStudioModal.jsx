@@ -7,12 +7,16 @@ import {
 import { interviewService } from '../services/interview.service';
 import './ResumeStudioModal.scss';
 
-export default function ResumeStudioModal({ isOpen, onClose, report }) {
+export default function ResumeStudioModal({ isOpen, onClose, report, customResumeData, onSaveCustomResume }) {
     if (!isOpen || !report) return null;
 
     const parsedProfile = report.parsedProfile || {};
 
     const buildInitialData = () => {
+        if (customResumeData) {
+            return { ...customResumeData };
+        }
+
         const candidateName = parsedProfile.fullName || "GEDDAM ABHIJEETHKAR";
         const email = parsedProfile.email || "abhijeethkar.geddam.dev@gmail.com";
         const phone = parsedProfile.phone || "+91-9177813634";
@@ -126,6 +130,7 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
     const [splitPercent, setSplitPercent] = useState(50);
     const [isDragging, setIsDragging] = useState(false);
     const [previewWidth, setPreviewWidth] = useState(800);
+    const [saveToast, setSaveToast] = useState(false);
     const previewContainerRef = useRef(null);
 
     // Measure preview panel width dynamically
@@ -152,6 +157,14 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
         if (window.confirm("Reset all resume edits back to AI defaults?")) {
             setResumeData(buildInitialData());
         }
+    };
+
+    const handleSave = () => {
+        if (onSaveCustomResume) {
+            onSaveCustomResume(resumeData);
+        }
+        setSaveToast(true);
+        setTimeout(() => setSaveToast(false), 2500);
     };
 
     // Resizer Dragging Handlers
@@ -196,6 +209,10 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
     const handleDownloadCustom = async () => {
         try {
             setDownloading(true);
+            // Save state on download
+            if (onSaveCustomResume) {
+                onSaveCustomResume(resumeData);
+            }
             const blob = await interviewService.downloadCustomResume(resumeData);
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
@@ -205,6 +222,8 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
             link.click();
             link.parentNode.removeChild(link);
             window.URL.revokeObjectURL(url);
+            setSaveToast(true);
+            setTimeout(() => setSaveToast(false), 2500);
         } catch (error) {
             console.error("Custom resume download error:", error);
             alert("Failed to download custom resume. Please try again.");
@@ -253,6 +272,12 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
 
     return (
         <div className="resume-studio-overlay">
+            {saveToast && (
+                <div className="studio-save-toast">
+                    <CheckCircle2 size={16} />
+                    <span>Resume changes saved & applied!</span>
+                </div>
+            )}
             <div className="resume-studio-container">
                 {/* ── Studio Header Bar ── */}
                 <header className="studio-topbar">
@@ -296,6 +321,11 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                         <button className="st-btn st-btn--reset" onClick={handleReset} title="Reset to AI Defaults">
                             <RotateCcw size={14} />
                             <span>Reset</span>
+                        </button>
+
+                        <button className="st-btn st-btn--save" onClick={handleSave} title="Save & Apply Changes">
+                            <CheckCircle2 size={15} />
+                            <span>Save Changes</span>
                         </button>
                         
                         <button 

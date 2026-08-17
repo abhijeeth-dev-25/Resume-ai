@@ -637,14 +637,14 @@ async function generateInterviewReport({ resume, jobDescription, selfDescription
 /**
  * Generate PDF buffer using Puppeteer
  */
-async function generatePdfFromHtml(htmlContent) {
+async function generatePdfFromHtml(htmlContent, isSinglePage = false) {
     const browser = await puppeteer.launch({
         args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
     const page = await browser.newPage();
     await page.setContent(htmlContent, { waitUntil: "networkidle0" });
 
-    const pdfBuffer = await page.pdf({
+    const pdfOptions = {
         format: "A4",
         margin: {
             top: "0mm",
@@ -653,7 +653,13 @@ async function generatePdfFromHtml(htmlContent) {
             right: "0mm"
         },
         printBackground: true
-    });
+    };
+
+    if (isSinglePage) {
+        pdfOptions.pageRanges = '1';
+    }
+
+    const pdfBuffer = await page.pdf(pdfOptions);
 
     await browser.close();
     return pdfBuffer;
@@ -1211,7 +1217,7 @@ async function generateResumePdf({ report, resume, selfDescription, jobDescripti
         ]
     });
 
-    return await generatePdfFromHtml(html);
+    return await generatePdfFromHtml(html, true);
 }
 
 /**
@@ -1219,7 +1225,7 @@ async function generateResumePdf({ report, resume, selfDescription, jobDescripti
  */
 async function generateCustomResumePdf(customData) {
     const html = buildFullAtsResumeHtml(customData);
-    return await generatePdfFromHtml(html);
+    return await generatePdfFromHtml(html, true);
 }
 
 /**

@@ -411,6 +411,7 @@ const Result = () => {
     const [keywordCategoryFilter, setKeywordCategoryFilter] = useState('ALL');
     const [dsaDifficultyFilter, setDsaDifficultyFilter] = useState('ALL');
     const [completedTasks, setCompletedTasks] = useState({});
+    const [customResume, setCustomResume] = useState(null);
 
     const report = location.state?.report;
 
@@ -425,11 +426,17 @@ const Result = () => {
 
         try {
             setDownloadingResume(true);
-            const blob = await interviewService.downloadResume(report._id);
+            let blob;
+            if (customResume) {
+                blob = await interviewService.downloadCustomResume(customResume);
+            } else {
+                blob = await interviewService.downloadResume(report._id);
+            }
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', `Resume_${report.jobRole ? report.jobRole.replace(/\s+/g, '_') : 'Tailored'}.pdf`);
+            const candidateName = customResume?.candidateName || report.parsedProfile?.fullName || 'Tailored';
+            link.setAttribute('download', `${candidateName.replace(/\s+/g, '_')}_Resume.pdf`);
             document.body.appendChild(link);
             link.click();
             link.parentNode.removeChild(link);
@@ -1591,6 +1598,8 @@ const Result = () => {
                 isOpen={isStudioOpen}
                 onClose={() => setIsStudioOpen(false)}
                 report={report}
+                customResumeData={customResume}
+                onSaveCustomResume={setCustomResume}
             />
         </div>
     );
