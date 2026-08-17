@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Navigate, Link } from 'react-router';
+import { useForm } from 'react-hook-form';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Input from '../components/ui/Input';
@@ -8,44 +9,25 @@ import ThemeToggle from '../components/ui/ThemeToggle';
 import './AuthForm.scss';
 
 const Login = () => {
-    const [formData, setFormData]         = useState({ email: '', password: '' });
-    const [fieldErrors, setFieldErrors]   = useState({});
     const [apiError, setApiError]         = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const { login, isAuthenticated }      = useAuth();
 
-    const { login, isAuthenticated } = useAuth();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+    } = useForm({ mode: 'onTouched' });
 
     // ── Auth guard: already logged in? bounce to home ─────────────────────────
     if (isAuthenticated) return <Navigate to="/" replace />;
 
-    const validate = () => {
-        const errors = {};
-        if (!formData.email)    errors.email    = 'Email is required.';
-        if (!formData.password) errors.password = 'Password is required.';
-        return errors;
-    };
-
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.id]: e.target.value });
-        if (fieldErrors[e.target.id]) {
-            setFieldErrors({ ...fieldErrors, [e.target.id]: '' });
-        }
-        if (apiError) setApiError('');
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const errors = validate();
-        if (Object.keys(errors).length) { setFieldErrors(errors); return; }
-
-        setIsSubmitting(true);
+    const onSubmit = async (data) => {
+        setApiError('');
         try {
-            await login(formData);
+            await login(data);
         } catch (err) {
             setApiError(err.response?.data?.message || 'Login failed. Please try again.');
-        } finally {
-            setIsSubmitting(false);
         }
     };
 
@@ -71,18 +53,24 @@ const Login = () => {
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="auth-form" noValidate>
+                <form onSubmit={handleSubmit(onSubmit)} className="auth-form" noValidate>
                     <Input
                         id="email"
                         type="email"
                         placeholder="name@example.com"
                         label="Email Address"
                         icon={Mail}
-                        value={formData.email}
-                        onChange={handleChange}
-                        error={fieldErrors.email}
                         autoComplete="email"
+                        error={errors.email?.message}
+                        {...register('email', {
+                            required: 'Email is required.',
+                            pattern: {
+                                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                message: 'Enter a valid email address.',
+                            },
+                        })}
                     />
+
                     <div className="input-password-wrapper">
                         <Input
                             id="password"
@@ -90,10 +78,15 @@ const Login = () => {
                             placeholder="••••••••"
                             label="Password"
                             icon={Lock}
-                            value={formData.password}
-                            onChange={handleChange}
-                            error={fieldErrors.password}
                             autoComplete="current-password"
+                            error={errors.password?.message}
+                            {...register('password', {
+                                required: 'Password is required.',
+                                minLength: {
+                                    value: 6,
+                                    message: 'Password must be at least 6 characters.',
+                                },
+                            })}
                         />
                         <button
                             type="button"

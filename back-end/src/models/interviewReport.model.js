@@ -36,15 +36,15 @@ const mongoose = require("mongoose");
 const technicalQuestionsSchema = new mongoose.Schema({
     question: {
         type : String,
-        require: [true, "technical question is required"]
+        required: [true, "technical question is required"]
     },
     intention: {
         type: String,
-        require: [true, "Intention is required"]
+        required: [true, "Intention is required"]
     },
     answer: {
         type: String,
-        require: [true, "Answer is required"]
+        required: [true, "Answer is required"]
     }
 },{
     _id: false
@@ -53,15 +53,15 @@ const technicalQuestionsSchema = new mongoose.Schema({
 const behavioralQuestionsSchema = new mongoose.Schema({
     question: {
         type : String,
-        require: [true, "behavioral question is required"]
+        required: [true, "behavioral question is required"]
     },
     intention: {
         type: String,
-        require: [true, "Intention is required"]
+        required: [true, "Intention is required"]
     },
     answer: {
         type: String,
-        require: [true, "Answer is required"]
+        required: [true, "Answer is required"]
     }
 },{
     _id: false
@@ -70,12 +70,12 @@ const behavioralQuestionsSchema = new mongoose.Schema({
 const skillGapsSchema = new mongoose.Schema({
     skill: {
         type : String,
-        require: [true, "skill is required"]
+        required: [true, "skill is required"]
     },
     severity: {
         type: String,
         enum : ["low", "medium", "high"],
-        require: [true, "severity is required"]
+        required: [true, "severity is required"]
     }
 },{
     _id: false
@@ -84,7 +84,7 @@ const skillGapsSchema = new mongoose.Schema({
 const preparationPlanSchema = new mongoose.Schema({
     day: {
         type: Number,
-        require: [true, "Day is required"]
+        required: [true, "Day is required"]
     },
     focus: {
         type: String,

@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, Navigate } from 'react-router';
+import { useForm, Controller } from 'react-hook-form';
 import { LogOut, Send, User, Briefcase, FileText } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Input from '../components/ui/Input';
@@ -8,20 +9,24 @@ import FileUpload from '../components/ui/FileUpload';
 import ThemeToggle from '../components/ui/ThemeToggle';
 import DocumentLoader from '../components/ui/DocumentLoader';
 import { interviewService } from '../services/interview.service';
+import { useState } from 'react';
 import './Home.scss';
 
 const Home = () => {
     const { user, logout, isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
-    const [resumeFile, setResumeFile]         = useState(null);
-    const [jobDescription, setJobDescription] = useState('');
-    const [selfDescription, setSelfDescription] = useState('');
-    const [submitting, setSubmitting]         = useState(false);
-    const [errors, setErrors]                 = useState({});
-    const [apiError, setApiError]             = useState('');
-    const [pastReports, setPastReports]       = useState([]);
+    const [apiError, setApiError]       = useState('');
+    const [pastReports, setPastReports] = useState([]);
     const [loadingReports, setLoadingReports] = useState(true);
+
+    const {
+        register,
+        handleSubmit,
+        control,
+        reset,
+        formState: { errors, isSubmitting },
+    } = useForm({ mode: 'onTouched' });
 
     useEffect(() => {
         if (!isAuthenticated) return;
@@ -41,41 +46,18 @@ const Home = () => {
     // ── Auth guard: redirect unauthenticated users ─────────────────────────────
     if (!isAuthenticated) return <Navigate to="/login" replace />;
 
-    const validate = () => {
-        const e = {};
-        if (!resumeFile)         e.resume       = 'Please upload your resume PDF.';
-        if (!jobDescription.trim()) e.jobDescription  = 'Job description is required.';
-        if (!selfDescription.trim()) e.selfDescription = 'Please write a brief self description.';
-        return e;
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const errs = validate();
-        if (Object.keys(errs).length) { setErrors(errs); return; }
-
-        setErrors({});
+    const onSubmit = async (data) => {
         setApiError('');
-        setSubmitting(true);
-
         try {
-            const data = await interviewService.submitInterview({
-                resume: resumeFile,
-                jobDescription,
-                selfDescription,
+            const result = await interviewService.submitInterview({
+                resume: data.resume,
+                jobDescription: data.jobDescription,
+                selfDescription: data.selfDescription,
             });
-            // data = { success, message, report: { matchScore, technicalQuestions, ... } }
-            navigate('/result', { state: { report: data.report } });
-
+            navigate('/result', { state: { report: result.report } });
         } catch (err) {
             setApiError(err.response?.data?.message || 'Failed to generate report. Please try again.');
-        } finally {
-            setSubmitting(false);
         }
-    };
-
-    const clearFieldError = (field) => {
-        if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }));
     };
 
     return (
@@ -112,7 +94,7 @@ const Home = () => {
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="home-grid" noValidate>
+                <form onSubmit={handleSubmit(onSubmit)} className="home-grid" noValidate>
                     {/* ── LEFT COLUMN — Job Description ── */}
                     <div className="home-col-left">
                         <div className="home-card glass-panel">
@@ -131,13 +113,12 @@ const Home = () => {
                                     id="jobDescription"
                                     multiline
                                     rows={16}
-                                    placeholder="Paste the job description here...&#10;&#10;Include responsibilities, requirements, and any key skills the role expects."
-                                    value={jobDescription}
-                                    onChange={(e) => {
-                                        setJobDescription(e.target.value);
-                                        clearFieldError('jobDescription');
-                                    }}
-                                    error={errors.jobDescription}
+                                    placeholder={`Paste the job description here...\n\nInclude responsibilities, requirements, and any key skills the role expects.`}
+                                    error={errors.jobDescription?.message}
+                                    {...register('jobDescription', {
+                                        required: 'Job description is required.',
+                                        minLength: { value: 50, message: 'Please paste a more complete job description (min 50 chars).' },
+                                    })}
                                 />
                             </div>
 
@@ -147,10 +128,10 @@ const Home = () => {
                                     variant="primary"
                                     fullWidth
                                     size="lg"
-                                    isLoading={submitting}
-                                    disabled={submitting}
+                                    isLoading={isSubmitting}
+                                    disabled={isSubmitting}
                                 >
-                                    {submitting ? (
+                                    {isSubmitting ? (
                                         <>Generating Report…</>
                                     ) : (
                                         <><Send size={16} /> Generate AI Report</>
@@ -170,17 +151,22 @@ const Home = () => {
                                 </div>
                                 <div>
                                     <h3 className="home-card-title">Upload Resume</h3>
-                                    <p className="home-card-subtitle">PDF format only</p>
+                                    <p className="home-card-subtitle">PDF format only · max 3 MB</p>
                                 </div>
                             </div>
                             <div className="home-card-body">
-                                <FileUpload
-                                    value={resumeFile}
-                                    onChange={(file) => {
-                                        setResumeFile(file);
-                                        clearFieldError('resume');
-                                    }}
-                                    error={errors.resume}
+                                {/* FileUpload isn't a plain input so use Controller */}
+                                <Controller
+                                    name="resume"
+                                    control={control}
+                                    rules={{ required: 'Please upload your resume PDF.' }}
+                                    render={({ field: { onChange, value } }) => (
+                                        <FileUpload
+                                            value={value}
+                                            onChange={onChange}
+                                            error={errors.resume?.message}
+                                        />
+                                    )}
                                 />
                             </div>
                         </div>
@@ -201,13 +187,12 @@ const Home = () => {
                                     id="selfDescription"
                                     multiline
                                     rows={7}
-                                    placeholder="Write a brief description about yourself...&#10;&#10;Your experience, key strengths, and what kind of role you're looking for."
-                                    value={selfDescription}
-                                    onChange={(e) => {
-                                        setSelfDescription(e.target.value);
-                                        clearFieldError('selfDescription');
-                                    }}
-                                    error={errors.selfDescription}
+                                    placeholder={`Write a brief description about yourself...\n\nYour experience, key strengths, and what kind of role you're looking for.`}
+                                    error={errors.selfDescription?.message}
+                                    {...register('selfDescription', {
+                                        required: 'Please write a brief self description.',
+                                        minLength: { value: 20, message: 'Please write at least 20 characters.' },
+                                    })}
                                 />
                             </div>
                         </div>
@@ -230,8 +215,8 @@ const Home = () => {
                     ) : (
                         <div className="home-reports-grid">
                             {pastReports.map((report) => (
-                                <div 
-                                    key={report._id} 
+                                <div
+                                    key={report._id}
                                     className="home-report-card glass-panel"
                                     onClick={() => navigate('/result', { state: { report } })}
                                 >
@@ -248,8 +233,8 @@ const Home = () => {
                                             })}
                                         </div>
                                     </div>
-                                    <div className="hrc-job-role" title={report.jobRole || "Interview Report"}>
-                                        {report.jobRole || "Interview Report"}
+                                    <div className="hrc-job-role" title={report.jobRole || 'Interview Report'}>
+                                        {report.jobRole || 'Interview Report'}
                                     </div>
                                     <div className="hrc-stats">
                                         <div className="hrc-stat"><span>{report.technicalQuestions?.length || 0}</span> Tech Qs</div>
@@ -264,7 +249,7 @@ const Home = () => {
                 </section>
 
                 {/* Loading overlay */}
-                {submitting && (
+                {isSubmitting && (
                     <div className="home-loading-overlay">
                         <DocumentLoader />
                     </div>
