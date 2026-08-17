@@ -122,9 +122,31 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
     const [resumeData, setResumeData] = useState(buildInitialData);
     const [activeTab, setActiveTab] = useState('personal');
     const [downloading, setDownloading] = useState(false);
-    const [zoomLevel, setZoomLevel] = useState(1);
+    const [zoomMultiplier, setZoomMultiplier] = useState(1);
     const [splitPercent, setSplitPercent] = useState(50);
     const [isDragging, setIsDragging] = useState(false);
+    const [previewWidth, setPreviewWidth] = useState(800);
+    const previewContainerRef = useRef(null);
+
+    // Measure preview panel width dynamically
+    useEffect(() => {
+        if (!previewContainerRef.current) return;
+        const observer = new ResizeObserver((entries) => {
+            for (let entry of entries) {
+                if (entry.contentRect.width) {
+                    setPreviewWidth(entry.contentRect.width);
+                }
+            }
+        });
+        observer.observe(previewContainerRef.current);
+        return () => observer.disconnect();
+    }, []);
+
+    // Rigid A4 Paper Dimension is exactly 794px
+    const a4BaseWidth = 794;
+    const a4BaseHeight = 1123;
+    const autoScale = Math.min(1.15, Math.max(0.35, (previewWidth - 48) / a4BaseWidth));
+    const effectiveScale = autoScale * zoomMultiplier;
 
     const handleReset = () => {
         if (window.confirm("Reset all resume edits back to AI defaults?")) {
@@ -142,7 +164,7 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
         const handleMouseMove = (e) => {
             if (!isDragging) return;
             const newPercent = (e.clientX / window.innerWidth) * 100;
-            if (newPercent >= 22 && newPercent <= 78) {
+            if (newPercent >= 20 && newPercent <= 80) {
                 setSplitPercent(newPercent);
             }
         };
@@ -240,7 +262,7 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                         </div>
                         <div className="st-title-wrap">
                             <h2>Interactive Resume Studio</h2>
-                            <span className="st-subtitle">Live Preview · Real-Time ATS Editing · Drag & Resize Workspace</span>
+                            <span className="st-subtitle">Physical A4 Sheet Simulation · 100% Rigid Typography · Real-Time ATS Editing</span>
                         </div>
                     </div>
 
@@ -249,25 +271,25 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                         <div className="zoom-controls">
                             <button 
                                 className="zoom-btn" 
-                                onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.7))}
+                                onClick={() => setZoomMultiplier(prev => Math.max(prev - 0.1, 0.6))}
                                 title="Zoom Out"
                             >
                                 <ZoomOut size={14} />
                             </button>
-                            <span className="zoom-label">{Math.round(zoomLevel * 100)}%</span>
+                            <span className="zoom-label">{Math.round(effectiveScale * 100)}%</span>
                             <button 
                                 className="zoom-btn" 
-                                onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.3))}
+                                onClick={() => setZoomMultiplier(prev => Math.min(prev + 0.1, 1.4))}
                                 title="Zoom In"
                             >
                                 <ZoomIn size={14} />
                             </button>
                             <button 
                                 className="zoom-btn zoom-btn--fit" 
-                                onClick={() => setZoomLevel(1)}
-                                title="Reset Zoom to 100%"
+                                onClick={() => setZoomMultiplier(1)}
+                                title="Fit to Panel Width"
                             >
-                                100%
+                                Fit
                             </button>
                         </div>
 
@@ -780,9 +802,21 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                     </div>
 
                     {/* ── RIGHT PANEL: Real-time Live A4 Document Canvas ── */}
-                    <main className="studio-preview-panel">
-                        <div className="preview-canvas-scroller" style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top center' }}>
-                            <article className="a4-resume-sheet">
+                    <main className="studio-preview-panel" ref={previewContainerRef}>
+                        <div 
+                            className="preview-canvas-scroller" 
+                            style={{ 
+                                width: `${a4BaseWidth * effectiveScale}px`,
+                                height: `${a4BaseHeight * effectiveScale}px`
+                            }}
+                        >
+                            <article 
+                                className="a4-resume-sheet"
+                                style={{
+                                    transform: `scale(${effectiveScale})`,
+                                    transformOrigin: 'top left'
+                                }}
+                            >
                                 {/* Header */}
                                 <header className="res-header">
                                     <h1>{resumeData.candidateName}</h1>
