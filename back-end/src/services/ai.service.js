@@ -745,10 +745,7 @@ function buildFullAtsResumeHtml({
         "Academic Excellence Award: Awarded Departmental Merit Scholarship for outstanding academic performance across 8 consecutive semesters."
     ]
 }) {
-    let cleanRole = targetRole;
-    if (!cleanRole || cleanRole.toLowerCase().includes("to help") || cleanRole.toLowerCase().includes("intern to") || cleanRole.length > 55) {
-        cleanRole = "Full Stack Software Engineer | Backend & AI Systems";
-    }
+    let cleanRole = (targetRole !== undefined && targetRole !== null) ? targetRole : "Full Stack Software Engineer | Backend & AI Systems";
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -965,82 +962,70 @@ function buildFullAtsResumeHtml({
   <!-- HEADER -->
   <div class="header">
     <h1>${candidateName}</h1>
-    <div class="target-role">${cleanRole}</div>
+    ${cleanRole ? `<div class="target-role">${cleanRole}</div>` : ''}
     <div class="contact-bar">
-      <span>📍 ${location}</span> •
-      <span>✉️ <a href="mailto:${email}">${email}</a></span> •
-      <span>📞 ${phone}</span> •
-      <span>🔗 <a href="https://${linkedin.replace(/^https?:\/\//, '')}">${linkedin}</a></span> •
-      <span>💻 <a href="https://${github.replace(/^https?:\/\//, '')}">${github}</a></span>
+      ${location ? `<span>📍 ${location}</span> •` : ''}
+      ${email ? `<span>✉️ <a href="mailto:${email}">${email}</a></span> •` : ''}
+      ${phone ? `<span>📞 ${phone}</span> •` : ''}
+      ${linkedin ? `<span>🔗 <a href="https://${linkedin.replace(/^https?:\/\//, '')}">${linkedin}</a></span> •` : ''}
+      ${github ? `<span>💻 <a href="https://${github.replace(/^https?:\/\//, '')}">${github}</a></span>` : ''}
     </div>
   </div>
 
   <!-- PROFESSIONAL SUMMARY -->
+  ${summary ? `
   <div class="section">
     <div class="section-title">Executive Professional Summary</div>
     <p class="summary-text">${summary}</p>
-  </div>
+  </div>` : ''}
 
   <!-- CORE SKILLS INVENTORY -->
   <div class="section">
     <div class="section-title">Technical Skills & Competency Matrix</div>
     <table class="skills-table">
-      <tr>
-        <td class="skills-label">Languages & Runtimes:</td>
-        <td class="skills-content">${skills.languages || 'JavaScript (ES6+), TypeScript, Node.js, Python, SQL, HTML5/CSS3'}</td>
-      </tr>
-      <tr>
-        <td class="skills-label">Frontend & UI:</td>
-        <td class="skills-content">${skills.frontend || 'React.js, Next.js, Redux Toolkit, TailwindCSS, Responsive UI/UX, Webpack, Vite'}</td>
-      </tr>
-      <tr>
-        <td class="skills-label">Backend & Architecture:</td>
-        <td class="skills-content">${skills.backend || 'Express.js, RESTful APIs, GraphQL, WebSockets, Microservices, LangChain, LangGraph'}</td>
-      </tr>
-      <tr>
-        <td class="skills-label">Databases & Caching:</td>
-        <td class="skills-content">${skills.databases || 'MongoDB (Mongoose, Aggregation Pipelines, ESR Indexing), PostgreSQL, Redis'}</td>
-      </tr>
-      <tr>
-        <td class="skills-label">Cloud, DevOps & Tools:</td>
-        <td class="skills-content">${skills.tools || 'Docker, Git, GitHub Actions (CI/CD), AWS (S3, EC2), Puppeteer, Google Gemini API, Postman, Linux'}</td>
-      </tr>
+      ${skills.languages ? `<tr><td class="skills-label">Languages & Runtimes:</td><td class="skills-content">${skills.languages}</td></tr>` : ''}
+      ${skills.frontend ? `<tr><td class="skills-label">Frontend & UI:</td><td class="skills-content">${skills.frontend}</td></tr>` : ''}
+      ${skills.backend ? `<tr><td class="skills-label">Backend & Architecture:</td><td class="skills-content">${skills.backend}</td></tr>` : ''}
+      ${skills.databases ? `<tr><td class="skills-label">Databases & Caching:</td><td class="skills-content">${skills.databases}</td></tr>` : ''}
+      ${skills.tools ? `<tr><td class="skills-label">Cloud, DevOps & Tools:</td><td class="skills-content">${skills.tools}</td></tr>` : ''}
     </table>
   </div>
 
   <!-- WORK EXPERIENCE -->
+  ${experience && experience.length > 0 ? `
   <div class="section">
     <div class="section-title">Professional Experience</div>
     ${experience.map(exp => {
-        const title = (exp.title && exp.title !== 'undefined') ? exp.title : 'Software Engineer — Backend & AI Systems';
-        const company = (exp.company && exp.company !== 'undefined') ? exp.company : 'TechNova Solutions';
-        const date = (exp.duration && exp.duration !== 'undefined') ? exp.duration : '2023 – Present';
-        const loc = (exp.location && exp.location !== 'undefined') ? exp.location : location;
+        const title = exp.title || '';
+        const company = exp.company || '';
+        const date = exp.duration || '';
+        const loc = exp.location || '';
         const bullets = exp.highlights || [];
         return `
           <div class="entry">
             <div class="entry-header">
               <div>
-                <span class="entry-title">${title}</span> — 
-                <span class="entry-subtitle">${company}</span>
+                <span class="entry-title">${title}</span>${company ? ` — <span class="entry-subtitle">${company}</span>` : ''}
               </div>
-              <span class="entry-date">${date} | ${loc}</span>
+              <span class="entry-date">${date}${loc ? ` | ${loc}` : ''}</span>
             </div>
+            ${bullets.length > 0 ? `
             <ul class="bullets">
               ${bullets.map(h => `<li>${h.replace(/(\d+[\d\.]*[%x\+]+|\$\d+[MK]?|\b\d+\b\+?)/g, '<strong>$1</strong>')}</li>`).join("")}
-            </ul>
+            </ul>` : ''}
           </div>
         `;
     }).join("")}
-  </div>
+  </div>` : ''}
 
   <!-- FEATURED ENGINEERING & AI PROJECTS -->
+  ${projects && projects.length > 0 ? `
   <div class="section">
     <div class="section-title">Featured Engineering & AI Systems</div>
     ${projects.map(proj => {
-        const pName = proj.name || 'AI Engineering Project';
+        const pName = proj.name || 'Project';
         const pTechs = Array.isArray(proj.technologies) ? proj.technologies.join(" · ") : (proj.technologies || '');
-        const pBullets = proj.highlights || [proj.description || 'Engineered production-grade web application with real-time data sync.'];
+        const pBullets = proj.highlights || [];
         return `
           <div class="entry">
             <div class="entry-header">
@@ -1049,13 +1034,14 @@ function buildFullAtsResumeHtml({
               </div>
               <span class="entry-date">${pTechs}</span>
             </div>
+            ${pBullets.length > 0 ? `
             <ul class="bullets">
               ${pBullets.map(h => `<li>${h.replace(/(\d+[\d\.]*[%x\+]+|\$\d+[MK]?|\b\d+\b\+?)/g, '<strong>$1</strong>')}</li>`).join("")}
-            </ul>
+            </ul>` : ''}
           </div>
         `;
     }).join("")}
-  </div>
+  </div>` : ''}
 
   <!-- SPLIT: EDUCATION & CERTIFICATIONS -->
   <div class="section">
@@ -1063,26 +1049,27 @@ function buildFullAtsResumeHtml({
       <!-- Education Column -->
       <div class="two-col-cell">
         <div class="section-title">Education & Credentials</div>
-        <div class="edu-degree">${education.degree || 'Bachelor of Technology in Computer Science & Engineering'}</div>
-        <div class="edu-inst">${education.institution || 'University Institute of Technology'} <span style="float:right; font-weight: normal; color: #64748b;">${education.year || '2020 – 2024'}</span></div>
-        <div class="edu-detail">${education.details || 'Core: Distributed Systems, Advanced DSA, Database Management, Operating Systems'}</div>
+        <div class="edu-degree">${education?.degree || ''}</div>
+        <div class="edu-inst">${education?.institution || ''} <span style="float:right; font-weight: normal; color: #64748b;">${education?.year || ''}</span></div>
+        <div class="edu-detail">${education?.details || ''}</div>
       </div>
 
       <!-- Certifications Column -->
       <div class="two-col-cell">
         <div class="section-title">Certifications & Honors</div>
-        ${certifications.map(c => `<div class="cert-item">• <strong>${c.split(':')[0] || c}:</strong> ${c.split(':')[1] || ''}</div>`).join("")}
+        ${(certifications || []).map(c => `<div class="cert-item">• <strong>${c.split(':')[0] || c}:</strong> ${c.split(':')[1] || ''}</div>`).join("")}
       </div>
     </div>
   </div>
 
   <!-- KEY ACHIEVEMENTS & OPEN SOURCE LEADERSHIP -->
+  ${achievements && achievements.length > 0 ? `
   <div class="section" style="margin-bottom: 0;">
     <div class="section-title">Key Achievements & Open Source Contributions</div>
     <ul class="bullets">
       ${achievements.map(a => `<li>${a.replace(/(\d+[\d\.]*[%x\+]+|\$\d+[MK]?|\b\d+\b\+?)/g, '<strong>$1</strong>')}</li>`).join("")}
     </ul>
-  </div>
+  </div>` : ''}
 
 </body>
 </html>`;
