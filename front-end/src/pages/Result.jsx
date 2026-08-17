@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import {
     ArrowLeft, Target, Zap, AlertTriangle, Calendar,
@@ -7,7 +7,8 @@ import {
     Award, Briefcase, GraduationCap, Code,
     User, Mail, Phone, MapPin, Linkedin, Github,
     Check, ArrowRight, TrendingUp, ShieldCheck,
-    Cpu, Compass, UserCheck, Flame, Layers, ExternalLink
+    Cpu, Compass, UserCheck, Flame, Layers, ExternalLink,
+    Filter, HelpCircle, ArrowUpRight, CheckSquare, PlusCircle
 } from 'lucide-react';
 import { interviewService } from '../services/interview.service';
 import { useAuth } from '../context/AuthContext';
@@ -30,7 +31,6 @@ const CircularGauge = ({ score, size = 110, strokeWidth = 9, label, sublabel, co
         <div className="circle-graph-card">
             <div className="circle-graph-wrapper" style={{ width: size, height: size }}>
                 <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-                    {/* Background Track Circle */}
                     <circle
                         cx={size / 2}
                         cy={size / 2}
@@ -40,7 +40,6 @@ const CircularGauge = ({ score, size = 110, strokeWidth = 9, label, sublabel, co
                         strokeWidth={strokeWidth}
                         className="circle-track"
                     />
-                    {/* Glowing Progress Circle */}
                     <circle
                         cx={size / 2}
                         cy={size / 2}
@@ -55,7 +54,6 @@ const CircularGauge = ({ score, size = 110, strokeWidth = 9, label, sublabel, co
                         className="circle-progress"
                     />
                 </svg>
-                {/* Center Content */}
                 <div className="circle-inner-content">
                     {Icon && <Icon size={14} style={{ color: dynamicColor }} className="circle-icon" />}
                     <span className="circle-score-value" style={{ color: dynamicColor }}>
@@ -162,6 +160,7 @@ const Result = () => {
 
     const [activeSection, setActiveSection] = useState('overview');
     const [downloading, setDownloading]     = useState(false);
+    const [keywordCategoryFilter, setKeywordCategoryFilter] = useState('ALL');
 
     const report = location.state?.report;
 
@@ -224,10 +223,27 @@ const Result = () => {
     const totalKeywords = matchedKeywords.length + missingKeywords.length;
     const keywordCoverage = totalKeywords > 0 ? Math.round((matchedKeywords.length / totalKeywords) * 100) : matchScore;
 
-    // Calculate candidate experience summary
     const totalExperienceRoles = parsedProfile.experience?.length || 1;
     const candidateSkills = parsedProfile.hardSkills || matchedKeywords.map(k => typeof k === 'string' ? k : k.keyword);
     const candidateTools = parsedProfile.toolsAndFrameworks || [];
+
+    // Extract unique categories for keyword filter
+    const keywordCategories = useMemo(() => {
+        const cats = new Set();
+        matchedKeywords.forEach(k => k.category && cats.add(k.category));
+        missingKeywords.forEach(k => k.category && cats.add(k.category));
+        return ['ALL', ...Array.from(cats)];
+    }, [matchedKeywords, missingKeywords]);
+
+    const filteredMatchedKeywords = useMemo(() => {
+        if (keywordCategoryFilter === 'ALL') return matchedKeywords;
+        return matchedKeywords.filter(k => k.category === keywordCategoryFilter);
+    }, [matchedKeywords, keywordCategoryFilter]);
+
+    const filteredMissingKeywords = useMemo(() => {
+        if (keywordCategoryFilter === 'ALL') return missingKeywords;
+        return missingKeywords.filter(k => k.category === keywordCategoryFilter);
+    }, [missingKeywords, keywordCategoryFilter]);
 
     // ── Render TOC on Left Sidebar ─────────────────────────────────────────────
     const renderSidebarIndex = () => {
@@ -248,8 +264,8 @@ const Result = () => {
                         <div className="sidebar-index-item">Overall Match: {matchScore}%</div>
                         <div className="sidebar-index-item">Technical Skills: {scoreBreakdown.skillsScore ?? matchScore}%</div>
                         <div className="sidebar-index-item">Experience Fit: {scoreBreakdown.experienceScore ?? matchScore}%</div>
-                        <div className="sidebar-index-item">Education Fit: {scoreBreakdown.educationScore ?? 90}%</div>
-                        <div className="sidebar-index-item">ATS Parsability: {scoreBreakdown.atsFormattingScore ?? 88}%</div>
+                        <div className="sidebar-index-item">Education Fit: {scoreBreakdown.educationScore ?? 92}%</div>
+                        <div className="sidebar-index-item">ATS Parsability: {scoreBreakdown.atsFormattingScore ?? 90}%</div>
                     </>
                 );
             case 'keywords':
@@ -258,6 +274,7 @@ const Result = () => {
                         <div className="sidebar-index-item">Matched Skills ({matchedKeywords.length})</div>
                         <div className="sidebar-index-item">Missing Keywords ({missingKeywords.length})</div>
                         <div className="sidebar-index-item">Keyword Coverage: {keywordCoverage}%</div>
+                        <div className="sidebar-index-item">Categories ({keywordCategories.length - 1})</div>
                     </>
                 );
             case 'parsed':
@@ -526,16 +543,17 @@ const Result = () => {
             case 'keywords':
                 return (
                     <div className="keywords-view">
+                        {/* Summary Metrics Banner */}
                         <div className="keywords-stats-banner">
                             <div className="kw-banner-item">
                                 <span className="kw-banner-val">{matchedKeywords.length}</span>
-                                <span className="kw-banner-label">Matched Keywords</span>
+                                <span className="kw-banner-label">Matched Skills & Keywords</span>
                             </div>
                             <div className="kw-banner-item">
                                 <span className="kw-banner-val" style={{ color: 'var(--error)' }}>
                                     {missingKeywords.length}
                                 </span>
-                                <span className="kw-banner-label">Missing JD Keywords</span>
+                                <span className="kw-banner-label">Missing / Growth Skills</span>
                             </div>
                             <div className="kw-banner-item">
                                 <span className="kw-banner-val" style={{ color: 'var(--success)' }}>
@@ -543,37 +561,78 @@ const Result = () => {
                                 </span>
                                 <span className="kw-banner-label">ATS Coverage Rate</span>
                             </div>
+                            <div className="kw-banner-item">
+                                <span className="kw-banner-val" style={{ color: 'var(--accent)' }}>
+                                    +{Math.round((missingKeywords.length / (totalKeywords || 1)) * 30)}%
+                                </span>
+                                <span className="kw-banner-label">Potential Score Boost</span>
+                            </div>
                         </div>
 
-                        <div className="keyword-group">
-                            <h3 className="keyword-group-title text-success">
-                                <Check size={16} /> Matched Skills & Keywords ({matchedKeywords.length})
-                            </h3>
-                            <div className="keyword-tags">
-                                {matchedKeywords.map((item, i) => (
-                                    <div key={i} className="keyword-pill keyword-pill--matched">
-                                        <span className="kp-name">{typeof item === 'string' ? item : item.keyword}</span>
-                                        {item.category && <span className="kp-category">{item.category}</span>}
-                                    </div>
+                        {/* Category Filter Tabs */}
+                        <div className="kw-category-filter-bar">
+                            <span className="kw-filter-label"><Filter size={14} /> Filter by Domain:</span>
+                            <div className="kw-filter-pills">
+                                {keywordCategories.map((cat, i) => (
+                                    <button
+                                        key={i}
+                                        type="button"
+                                        className={`kw-filter-btn ${keywordCategoryFilter === cat ? 'kw-filter-btn--active' : ''}`}
+                                        onClick={() => setKeywordCategoryFilter(cat)}
+                                    >
+                                        {cat}
+                                    </button>
                                 ))}
                             </div>
                         </div>
 
+                        {/* Missing Keywords & Actionable Placement Advice */}
                         <div className="keyword-group">
-                            <h3 className="keyword-group-title text-error">
-                                <XCircle size={16} /> Missing Keywords in Resume ({missingKeywords.length})
-                            </h3>
-                            <div className="keyword-tags">
-                                {missingKeywords.map((item, i) => {
+                            <div className="keyword-group-header">
+                                <h3 className="keyword-group-title text-error">
+                                    <XCircle size={18} /> Missing Job Requirements & Placement Advice ({filteredMissingKeywords.length})
+                                </h3>
+                                <span className="keyword-group-hint">Incorporate these skills to optimize your resume for ATS screening</span>
+                            </div>
+
+                            <div className="missing-kw-cards-grid">
+                                {filteredMissingKeywords.map((item, i) => {
                                     const priority = item.priority || 'important';
                                     return (
-                                        <div key={i} className={`keyword-pill keyword-pill--missing keyword-pill--${priority}`}>
-                                            <span className="kp-name">{typeof item === 'string' ? item : item.keyword}</span>
-                                            {item.category && <span className="kp-category">{item.category}</span>}
-                                            <span className={`kp-priority kp-priority--${priority}`}>{priority}</span>
+                                        <div key={i} className={`missing-kw-card missing-kw-card--${priority}`}>
+                                            <div className="mkw-head">
+                                                <div className="mkw-title-row">
+                                                    <h4 className="mkw-name">{item.keyword}</h4>
+                                                    <span className={`kp-priority kp-priority--${priority}`}>{priority}</span>
+                                                </div>
+                                                {item.category && <span className="mkw-category">{item.category}</span>}
+                                            </div>
+                                            <p className="mkw-recommendation">
+                                                <strong>💡 Where to add:</strong> {item.recommendation || `Include ${item.keyword} in your technical skills inventory and work experience bullets.`}
+                                            </p>
                                         </div>
                                     );
                                 })}
+                            </div>
+                        </div>
+
+                        {/* Matched Keywords Grid */}
+                        <div className="keyword-group">
+                            <div className="keyword-group-header">
+                                <h3 className="keyword-group-title text-success">
+                                    <CheckCircle2 size={18} /> Verified Matched Skills ({filteredMatchedKeywords.length})
+                                </h3>
+                                <span className="keyword-group-hint">Skills found in your resume that directly align with the job description</span>
+                            </div>
+
+                            <div className="keyword-tags">
+                                {filteredMatchedKeywords.map((item, i) => (
+                                    <div key={i} className="keyword-pill keyword-pill--matched" title={item.context || ''}>
+                                        <span className="kp-check">✓</span>
+                                        <span className="kp-name">{typeof item === 'string' ? item : item.keyword}</span>
+                                        {item.category && <span className="kp-category">{item.category}</span>}
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>

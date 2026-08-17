@@ -699,14 +699,17 @@
 
 .keywords-stats-banner {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
     background: var(--bg-panel);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
     padding: 1.25rem;
 
-    @media (max-width: 540px) {
+    @media (max-width: 768px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    @media (max-width: 480px) {
         grid-template-columns: 1fr;
     }
 }
@@ -729,11 +732,64 @@
 }
 
 .kw-banner-label {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 700;
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.05em;
+}
+
+/* Category Filter Bar */
+.kw-category-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1.15rem;
+    flex-wrap: wrap;
+}
+
+.kw-filter-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.kw-filter-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.kw-filter-btn {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.3rem 0.75rem;
+    border-radius: 99px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition);
+
+    &:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+    }
+
+    &--active {
+        background: var(--accent) !important;
+        color: var(--text-on-accent) !important;
+        border-color: var(--accent) !important;
+        font-weight: 700;
+    }
 }
 
 .keyword-group {
@@ -742,16 +798,96 @@
     gap: 0.85rem;
 }
 
+.keyword-group-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
 .keyword-group-title {
     font-family: var(--font-display);
-    font-size: 1.05rem;
-    font-weight: 700;
+    font-size: 1.1rem;
+    font-weight: 800;
     display: flex;
     align-items: center;
     gap: 0.5rem;
 
     &.text-success { color: var(--success); }
     &.text-error   { color: var(--error); }
+}
+
+.keyword-group-hint {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Missing Keyword Placement Cards */
+.missing-kw-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 0.85rem;
+}
+
+.missing-kw-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    border-left: 4px solid var(--error);
+    transition: all var(--transition);
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+        border-color: var(--accent);
+    }
+
+    &--critical { border-left-color: var(--error); }
+    &--important { border-left-color: var(--warning); }
+    &--nice-to-have { border-left-color: var(--text-muted); }
+}
+
+.mkw-head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.mkw-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mkw-name {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.mkw-category {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.mkw-recommendation {
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-sm);
+
+    strong {
+        color: var(--accent);
+    }
 }
 
 .keyword-tags {
@@ -771,10 +907,15 @@
     border: 1.5px solid;
     transition: all var(--transition);
 
+    .kp-check {
+        font-weight: 800;
+        color: var(--success);
+    }
+
     .kp-category {
         font-size: 0.68rem;
         opacity: 0.75;
-        font-weight: 500;
+        font-weight: 600;
         text-transform: uppercase;
     }
 
@@ -786,6 +927,7 @@
         &:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px var(--success-bg);
+            border-color: var(--success);
         }
     }
 
@@ -803,9 +945,10 @@
     .kp-priority {
         font-size: 0.65rem;
         font-weight: 800;
-        padding: 0.1rem 0.4rem;
+        padding: 0.15rem 0.45rem;
         border-radius: 99px;
         text-transform: uppercase;
+        letter-spacing: 0.04em;
 
         &--critical  { background: var(--error); color: #fff; }
         &--important { background: var(--warning); color: #fff; }
