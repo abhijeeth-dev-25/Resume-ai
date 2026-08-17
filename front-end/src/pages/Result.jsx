@@ -6,7 +6,8 @@ import {
     BarChart3, Tags, FileText, CheckCircle2, XCircle,
     Award, Briefcase, GraduationCap, Code,
     User, Mail, Phone, MapPin, Linkedin, Github,
-    Check, ArrowRight, TrendingUp, ShieldCheck
+    Check, ArrowRight, TrendingUp, ShieldCheck,
+    Cpu, Compass, UserCheck, Flame, Layers, ExternalLink
 } from 'lucide-react';
 import { interviewService } from '../services/interview.service';
 import { useAuth } from '../context/AuthContext';
@@ -14,57 +15,105 @@ import Button from '../components/ui/Button';
 import ThemeToggle from '../components/ui/ThemeToggle';
 import './Result.scss';
 
-// ── Score ring component ───────────────────────────────────────────────────────
-const ScoreRing = ({ score }) => {
-    const r = 38;
-    const circ = 2 * Math.PI * r;
-    const fill = circ - (Math.min(Math.max(score, 0), 100) / 100) * circ;
-    const color = score >= 75 ? 'var(--success)' : score >= 50 ? 'var(--warning)' : 'var(--error)';
-
-    return (
-        <div className="score-ring-wrapper">
-            <svg width="96" height="96" viewBox="0 0 96 96">
-                <circle cx="48" cy="48" r={r} fill="none" stroke="var(--border-color)" strokeWidth="8" />
-                <circle
-                    cx="48" cy="48" r={r}
-                    fill="none"
-                    stroke={color}
-                    strokeWidth="8"
-                    strokeLinecap="round"
-                    strokeDasharray={circ}
-                    strokeDashoffset={fill}
-                    transform="rotate(-90 48 48)"
-                    style={{ transition: 'stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1)' }}
-                />
-            </svg>
-            <div className="score-ring-inner">
-                <span className="score-ring-value" style={{ color }}>{score}%</span>
-                <span className="score-ring-label">Match</span>
-            </div>
-        </div>
-    );
-};
-
-// ── Progress bar component ─────────────────────────────────────────────────────
-const ProgressBar = ({ label, score, color = 'var(--accent)' }) => {
+// ── Circular Gauge Component (Circle Graph) ──────────────────────────────────
+const CircularGauge = ({ score, size = 110, strokeWidth = 9, label, sublabel, color, icon: Icon }) => {
+    const radius = (size - strokeWidth * 2) / 2;
+    const circumference = 2 * Math.PI * radius;
     const safeScore = Math.min(Math.max(score || 0, 0), 100);
+    const strokeDashoffset = circumference - (safeScore / 100) * circumference;
+
+    const dynamicColor = color || (
+        safeScore >= 75 ? 'var(--success)' : safeScore >= 50 ? 'var(--warning)' : 'var(--error)'
+    );
+
     return (
-        <div className="prog-bar-container">
-            <div className="prog-bar-header">
-                <span className="prog-bar-label">{label}</span>
-                <span className="prog-bar-val">{safeScore}%</span>
+        <div className="circle-graph-card">
+            <div className="circle-graph-wrapper" style={{ width: size, height: size }}>
+                <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+                    {/* Background Track Circle */}
+                    <circle
+                        cx={size / 2}
+                        cy={size / 2}
+                        r={radius}
+                        fill="none"
+                        stroke="var(--border-color)"
+                        strokeWidth={strokeWidth}
+                        className="circle-track"
+                    />
+                    {/* Glowing Progress Circle */}
+                    <circle
+                        cx={size / 2}
+                        cy={size / 2}
+                        r={radius}
+                        fill="none"
+                        stroke={dynamicColor}
+                        strokeWidth={strokeWidth}
+                        strokeLinecap="round"
+                        strokeDasharray={circumference}
+                        strokeDashoffset={strokeDashoffset}
+                        transform={`rotate(-90 ${size / 2} ${size / 2})`}
+                        className="circle-progress"
+                    />
+                </svg>
+                {/* Center Content */}
+                <div className="circle-inner-content">
+                    {Icon && <Icon size={14} style={{ color: dynamicColor }} className="circle-icon" />}
+                    <span className="circle-score-value" style={{ color: dynamicColor }}>
+                        {safeScore}%
+                    </span>
+                </div>
             </div>
-            <div className="prog-bar-track">
-                <div
-                    className="prog-bar-fill"
-                    style={{ width: `${safeScore}%`, background: color }}
-                />
+            <div className="circle-labels">
+                <span className="circle-main-label">{label}</span>
+                {sublabel && <span className="circle-sub-label">{sublabel}</span>}
             </div>
         </div>
     );
 };
 
-// ── Accordion item ─────────────────────────────────────────────────────────────
+// ── Hero Main Score Ring ───────────────────────────────────────────────────────
+const HeroScoreRing = ({ score, role }) => {
+    const r = 50;
+    const circ = 2 * Math.PI * r;
+    const safeScore = Math.min(Math.max(score || 0, 0), 100);
+    const fill = circ - (safeScore / 100) * circ;
+    const color = safeScore >= 75 ? 'var(--success)' : safeScore >= 50 ? 'var(--warning)' : 'var(--error)';
+
+    const ratingTier = safeScore >= 85 ? 'Top Tier Fit' : safeScore >= 70 ? 'Strong Contender' : safeScore >= 50 ? 'Moderate Fit' : 'Requires Upskilling';
+
+    return (
+        <div className="hero-score-box">
+            <div className="hero-ring-wrapper">
+                <svg width="130" height="130" viewBox="0 0 130 130">
+                    <circle cx="65" cy="65" r={r} fill="none" stroke="var(--border-color)" strokeWidth="10" />
+                    <circle
+                        cx="65" cy="65" r={r}
+                        fill="none"
+                        stroke={color}
+                        strokeWidth="10"
+                        strokeLinecap="round"
+                        strokeDasharray={circ}
+                        strokeDashoffset={fill}
+                        transform="rotate(-90 65 65)"
+                        className="circle-progress"
+                    />
+                </svg>
+                <div className="hero-ring-inner">
+                    <span className="hero-ring-score" style={{ color }}>{safeScore}%</span>
+                    <span className="hero-ring-label">Overall Fit</span>
+                </div>
+            </div>
+            <div className="hero-tier-info">
+                <span className="hero-tier-badge" style={{ borderColor: color, color }}>
+                    <Flame size={12} /> {ratingTier}
+                </span>
+                <span className="hero-role-caption">Evaluated for <strong>{role}</strong></span>
+            </div>
+        </div>
+    );
+};
+
+// ── Accordion Item ─────────────────────────────────────────────────────────────
 const AccordionItem = ({ title, intention, answer, index }) => {
     const [open, setOpen] = useState(index === 0);
     return (
@@ -84,7 +133,7 @@ const AccordionItem = ({ title, intention, answer, index }) => {
                         </div>
                     )}
                     <div className="accordion-answer">
-                        <strong>🎯 Recommended Answer Approach:</strong>
+                        <strong>🎯 Recommended Answer Framework:</strong>
                         <p>{answer}</p>
                     </div>
                 </div>
@@ -95,13 +144,14 @@ const AccordionItem = ({ title, intention, answer, index }) => {
 
 // ── Navigation Sections ────────────────────────────────────────────────────────
 const SECTIONS = [
-    { id: 'match',        label: 'Match & Breakdown',    icon: BarChart3 },
-    { id: 'keywords',     label: 'ATS Keyword Matrix',   icon: Tags },
-    { id: 'parsed',       label: 'Parsed Resume Profile',icon: FileText },
-    { id: 'technical',    label: 'Technical Questions',  icon: Zap },
-    { id: 'behavioral',   label: 'Behavioral Questions', icon: Target },
-    { id: 'skill',        label: 'Skill Gaps & Fixes',   icon: AlertTriangle },
-    { id: 'preparation',  label: 'Preparation Roadmap',  icon: Calendar },
+    { id: 'overview',     label: 'Persona & Fit Overview', icon: UserCheck },
+    { id: 'match',        label: 'Circle Graphs & Scores', icon: BarChart3 },
+    { id: 'keywords',     label: 'ATS Keyword Matrix',     icon: Tags },
+    { id: 'parsed',       label: 'Parsed Resume Details',  icon: FileText },
+    { id: 'technical',    label: 'Technical Q&A Suite',    icon: Zap },
+    { id: 'behavioral',   label: 'Behavioral STAR Suite',  icon: Target },
+    { id: 'skill',        label: 'Skill Gaps & Action',    icon: AlertTriangle },
+    { id: 'preparation',  label: 'Preparation Roadmap',    icon: Calendar },
 ];
 
 // ── Result Page Component ──────────────────────────────────────────────────────
@@ -110,7 +160,7 @@ const Result = () => {
     const navigate = useNavigate();
     const { logout } = useAuth();
 
-    const [activeSection, setActiveSection] = useState('match');
+    const [activeSection, setActiveSection] = useState('overview');
     const [downloading, setDownloading]     = useState(false);
 
     const report = location.state?.report;
@@ -153,7 +203,7 @@ const Result = () => {
     }
 
     const {
-        jobRole = 'Target Role',
+        jobRole = 'Target Position',
         matchScore = 0,
         summaryAssessment = '',
         scoreBreakdown = {},
@@ -169,21 +219,37 @@ const Result = () => {
         preparationPlan = [],
     } = report;
 
-    // Calculate keyword coverage
+    // Derived persona data
+    const candidateName = parsedProfile.fullName || 'Candidate Profile';
     const totalKeywords = matchedKeywords.length + missingKeywords.length;
     const keywordCoverage = totalKeywords > 0 ? Math.round((matchedKeywords.length / totalKeywords) * 100) : matchScore;
 
-    // ── Render TOC on left sidebar ─────────────────────────────────────────────
+    // Calculate candidate experience summary
+    const totalExperienceRoles = parsedProfile.experience?.length || 1;
+    const candidateSkills = parsedProfile.hardSkills || matchedKeywords.map(k => typeof k === 'string' ? k : k.keyword);
+    const candidateTools = parsedProfile.toolsAndFrameworks || [];
+
+    // ── Render TOC on Left Sidebar ─────────────────────────────────────────────
     const renderSidebarIndex = () => {
         switch (activeSection) {
+            case 'overview':
+                return (
+                    <>
+                        <div className="sidebar-index-item">👤 Candidate: {candidateName}</div>
+                        <div className="sidebar-index-item">🎯 Target: {jobRole}</div>
+                        <div className="sidebar-index-item">⭐ Match Fit: {matchScore}%</div>
+                        <div className="sidebar-index-item">💼 Experience: {totalExperienceRoles} position(s)</div>
+                        <div className="sidebar-index-item">⚡ Key Skills: {candidateSkills.slice(0, 4).join(', ')}</div>
+                    </>
+                );
             case 'match':
                 return (
                     <>
                         <div className="sidebar-index-item">Overall Match: {matchScore}%</div>
-                        <div className="sidebar-index-item">Dimensional Scores ({Object.keys(scoreBreakdown).length || 5})</div>
-                        <div className="sidebar-index-item">Strengths ({strengths.length})</div>
-                        <div className="sidebar-index-item">Weaknesses / Risks ({weaknesses.length})</div>
-                        <div className="sidebar-index-item">STAR Bullet Rewrites ({bulletSuggestions.length})</div>
+                        <div className="sidebar-index-item">Technical Skills: {scoreBreakdown.skillsScore ?? matchScore}%</div>
+                        <div className="sidebar-index-item">Experience Fit: {scoreBreakdown.experienceScore ?? matchScore}%</div>
+                        <div className="sidebar-index-item">Education Fit: {scoreBreakdown.educationScore ?? 90}%</div>
+                        <div className="sidebar-index-item">ATS Parsability: {scoreBreakdown.atsFormattingScore ?? 88}%</div>
                     </>
                 );
             case 'keywords':
@@ -191,17 +257,17 @@ const Result = () => {
                     <>
                         <div className="sidebar-index-item">Matched Skills ({matchedKeywords.length})</div>
                         <div className="sidebar-index-item">Missing Keywords ({missingKeywords.length})</div>
-                        <div className="sidebar-index-item">Coverage Rate: {keywordCoverage}%</div>
+                        <div className="sidebar-index-item">Keyword Coverage: {keywordCoverage}%</div>
                     </>
                 );
             case 'parsed':
                 return (
                     <>
-                        <div className="sidebar-index-item">{parsedProfile.fullName || 'Candidate Profile'}</div>
-                        <div className="sidebar-index-item">Experience ({parsedProfile.experience?.length || 0} roles)</div>
+                        <div className="sidebar-index-item">{candidateName}</div>
+                        <div className="sidebar-index-item">Work Experience ({totalExperienceRoles} roles)</div>
                         <div className="sidebar-index-item">Education ({parsedProfile.education?.length || 0})</div>
-                        <div className="sidebar-index-item">Hard Skills ({parsedProfile.hardSkills?.length || 0})</div>
-                        <div className="sidebar-index-item">Projects ({parsedProfile.projects?.length || 0})</div>
+                        <div className="sidebar-index-item">Hard Skills ({candidateSkills.length})</div>
+                        <div className="sidebar-index-item">Tools ({candidateTools.length})</div>
                     </>
                 );
             case 'technical':
@@ -209,7 +275,7 @@ const Result = () => {
                     ? <p className="sidebar-empty">No technical questions</p>
                     : technicalQuestions.map((q, i) => (
                         <div key={i} className="sidebar-index-item" title={q.question}>
-                            Q{i + 1}. {q.question.length > 38 ? q.question.substring(0, 38) + '…' : q.question}
+                            Q{i + 1}. {q.question.length > 36 ? q.question.substring(0, 36) + '…' : q.question}
                         </div>
                     ));
             case 'behavioral':
@@ -217,7 +283,7 @@ const Result = () => {
                     ? <p className="sidebar-empty">No behavioral questions</p>
                     : behavioralQuestions.map((q, i) => (
                         <div key={i} className="sidebar-index-item" title={q.question}>
-                            Q{i + 1}. {q.question.length > 38 ? q.question.substring(0, 38) + '…' : q.question}
+                            Q{i + 1}. {q.question.length > 36 ? q.question.substring(0, 36) + '…' : q.question}
                         </div>
                     ));
             case 'skill':
@@ -242,10 +308,144 @@ const Result = () => {
 
     // ── Render Main Center Panel ───────────────────────────────────────────────
     const renderCenterContent = () => {
-        const currentSec = SECTIONS.find(s => s.id === activeSection);
-        const Icon = currentSec?.icon;
-
         switch (activeSection) {
+            case 'overview':
+                return (
+                    <div className="overview-view">
+                        {/* Hero Persona Header Card */}
+                        <div className="persona-hero-card">
+                            <div className="persona-avatar-wrapper">
+                                <div className="persona-avatar">
+                                    <User size={32} />
+                                </div>
+                                <span className="persona-verified-badge" title="Profile Parsed & Verified">✓</span>
+                            </div>
+
+                            <div className="persona-header-details">
+                                <div className="persona-name-row">
+                                    <h2>{candidateName}</h2>
+                                    <span className="persona-role-badge">
+                                        <Briefcase size={13} /> {jobRole}
+                                    </span>
+                                </div>
+
+                                <p className="persona-summary-snippet">
+                                    {parsedProfile.summary || summaryAssessment || "Experienced professional with hands-on domain engineering expertise and structured delivery focus."}
+                                </p>
+
+                                {/* Contact Pills */}
+                                <div className="persona-meta-pills">
+                                    {parsedProfile.email && (
+                                        <span className="p-meta-pill"><Mail size={12} /> {parsedProfile.email}</span>
+                                    )}
+                                    {parsedProfile.phone && (
+                                        <span className="p-meta-pill"><Phone size={12} /> {parsedProfile.phone}</span>
+                                    )}
+                                    {parsedProfile.location && (
+                                        <span className="p-meta-pill"><MapPin size={12} /> {parsedProfile.location}</span>
+                                    )}
+                                    {parsedProfile.linkedin && (
+                                        <span className="p-meta-pill"><Linkedin size={12} /> LinkedIn</span>
+                                    )}
+                                    {parsedProfile.github && (
+                                        <span className="p-meta-pill"><Github size={12} /> GitHub</span>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Visual Circular Graphs Section */}
+                        <div className="circle-graphs-section">
+                            <div className="cgs-header">
+                                <h3><BarChart3 size={18} /> Candidate Multi-Metric Circle Graphs</h3>
+                                <span>Multi-dimensional fit analysis computed by AI</span>
+                            </div>
+
+                            <div className="circle-graphs-grid">
+                                <CircularGauge
+                                    score={scoreBreakdown.skillsScore ?? matchScore}
+                                    label="Technical Skills"
+                                    sublabel="Core Hard Skills"
+                                    color="var(--accent)"
+                                    icon={Code}
+                                />
+                                <CircularGauge
+                                    score={scoreBreakdown.experienceScore ?? Math.min(matchScore + 3, 98)}
+                                    label="Experience Fit"
+                                    sublabel="Seniority & Roles"
+                                    color="var(--success)"
+                                    icon={Briefcase}
+                                />
+                                <CircularGauge
+                                    score={scoreBreakdown.educationScore ?? 92}
+                                    label="Education Fit"
+                                    sublabel="Credentials & Degrees"
+                                    color="var(--violet)"
+                                    icon={GraduationCap}
+                                />
+                                <CircularGauge
+                                    score={scoreBreakdown.responsibilitiesScore ?? Math.max(matchScore - 4, 60)}
+                                    label="Role Alignment"
+                                    sublabel="Day-to-day Deliverables"
+                                    color="var(--warning)"
+                                    icon={Target}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Top Highlights at a Glance */}
+                        <div className="persona-glance-grid">
+                            <div className="pg-card pg-card--strengths">
+                                <div className="pg-card-header">
+                                    <CheckCircle2 size={18} className="text-success" />
+                                    <h4>Candidate Superpowers (Why Hire)</h4>
+                                </div>
+                                <ul>
+                                    {strengths.length > 0 ? strengths.map((s, i) => (
+                                        <li key={i}>{s}</li>
+                                    )) : (
+                                        <>
+                                            <li>Proven hands-on software development and system architecture skills.</li>
+                                            <li>Strong problem-solving mindset and full-stack technical foundations.</li>
+                                            <li>Demonstrated capacity to lead modular backend and frontend integrations.</li>
+                                        </>
+                                    )}
+                                </ul>
+                            </div>
+
+                            <div className="pg-card pg-card--watchouts">
+                                <div className="pg-card-header">
+                                    <AlertTriangle size={18} className="text-warning" />
+                                    <h4>Interview Probing Points (Risks)</h4>
+                                </div>
+                                <ul>
+                                    {weaknesses.length > 0 ? weaknesses.map((w, i) => (
+                                        <li key={i}>{w}</li>
+                                    )) : (
+                                        <>
+                                            <li>Evaluate deep system resilience and high-scale production load scenarios.</li>
+                                            <li>Probe candidate on quantitative impact metrics in previous assignments.</li>
+                                        </>
+                                    )}
+                                </ul>
+                            </div>
+                        </div>
+
+                        {/* Quick Skills Spotlight */}
+                        <div className="persona-skills-spotlight">
+                            <h4><Zap size={16} /> Core Technical & Framework Stack</h4>
+                            <div className="pss-tags">
+                                {candidateSkills.map((skill, i) => (
+                                    <span key={i} className="pss-tag pss-tag--skill">{skill}</span>
+                                ))}
+                                {candidateTools.map((tool, i) => (
+                                    <span key={i} className="pss-tag pss-tag--tool">{tool}</span>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                );
+
             case 'match':
                 return (
                     <div className="match-view">
@@ -260,61 +460,40 @@ const Result = () => {
                             </div>
                         )}
 
-                        {/* Detailed Score Breakdown */}
-                        <div className="breakdown-section">
-                            <h3 className="section-subtitle">
-                                <TrendingUp size={16} /> Dimensional Match Breakdown
-                            </h3>
-                            <div className="breakdown-grid">
-                                <ProgressBar
-                                    label="Technical & Hard Skills"
-                                    score={scoreBreakdown.skillsScore ?? Math.min(matchScore + 4, 100)}
+                        {/* Circle Graphs Row */}
+                        <div className="circle-graphs-section">
+                            <div className="cgs-header">
+                                <h3><BarChart3 size={18} /> Detailed Radial Score Gauges</h3>
+                            </div>
+                            <div className="circle-graphs-grid">
+                                <CircularGauge
+                                    score={matchScore}
+                                    label="Overall Match"
+                                    sublabel="Combined ATS Score"
                                     color="var(--accent)"
+                                    icon={Award}
                                 />
-                                <ProgressBar
-                                    label="Experience & Seniority Fit"
-                                    score={scoreBreakdown.experienceScore ?? matchScore}
+                                <CircularGauge
+                                    score={scoreBreakdown.skillsScore ?? matchScore}
+                                    label="Skills Match"
+                                    sublabel="Technical Alignment"
                                     color="var(--success)"
+                                    icon={Code}
                                 />
-                                <ProgressBar
-                                    label="Education & Qualifications"
-                                    score={scoreBreakdown.educationScore ?? Math.min(matchScore + 8, 100)}
+                                <CircularGauge
+                                    score={scoreBreakdown.experienceScore ?? Math.min(matchScore + 3, 98)}
+                                    label="Experience"
+                                    sublabel="Tenure & Deliverables"
                                     color="var(--violet)"
+                                    icon={Briefcase}
                                 />
-                                <ProgressBar
-                                    label="Core Responsibilities Match"
-                                    score={scoreBreakdown.responsibilitiesScore ?? Math.max(matchScore - 5, 40)}
-                                    color="var(--warning)"
-                                />
-                                <ProgressBar
-                                    label="ATS Parsability & Structure"
-                                    score={scoreBreakdown.atsFormattingScore ?? 92}
+                                <CircularGauge
+                                    score={scoreBreakdown.atsFormattingScore ?? 90}
+                                    label="ATS Parsability"
+                                    sublabel="Structure & Impact"
                                     color="#38BDF8"
+                                    icon={Layers}
                                 />
-                            </div>
-                        </div>
-
-                        {/* Strengths & Weaknesses 2-Column */}
-                        <div className="sw-grid">
-                            <div className="sw-card sw-card--strengths">
-                                <h4><CheckCircle2 size={16} /> Competitive Strengths</h4>
-                                <ul>
-                                    {strengths.length > 0 ? strengths.map((s, i) => (
-                                        <li key={i}>{s}</li>
-                                    )) : (
-                                        <li>Strong alignment with role expectations and core domain.</li>
-                                    )}
-                                </ul>
-                            </div>
-                            <div className="sw-card sw-card--weaknesses">
-                                <h4><XCircle size={16} /> Key Potential Risks / Probing Areas</h4>
-                                <ul>
-                                    {weaknesses.length > 0 ? weaknesses.map((w, i) => (
-                                        <li key={i}>{w}</li>
-                                    )) : (
-                                        <li>Candidate should be prepared to discuss specific metrics on past projects.</li>
-                                    )}
-                                </ul>
                             </div>
                         </div>
 
@@ -328,7 +507,7 @@ const Result = () => {
                                     {bulletSuggestions.map((item, i) => (
                                         <div key={i} className="bullet-card">
                                             <div className="bullet-original">
-                                                <span className="bullet-tag bullet-tag--orig">Original</span>
+                                                <span className="bullet-tag bullet-tag--orig">Original Resume Line</span>
                                                 <p>"{item.original}"</p>
                                             </div>
                                             <div className="bullet-improved">
@@ -403,34 +582,20 @@ const Result = () => {
             case 'parsed':
                 return (
                     <div className="parsed-view">
-                        {/* Header profile card */}
                         <div className="parsed-header-card">
                             <div className="parsed-avatar">
-                                <User size={24} />
+                                <User size={26} />
                             </div>
                             <div className="parsed-header-info">
-                                <h2>{parsedProfile.fullName || 'Candidate Resume'}</h2>
+                                <h2>{candidateName}</h2>
                                 <div className="parsed-contact-row">
-                                    {parsedProfile.email && (
-                                        <span><Mail size={13} /> {parsedProfile.email}</span>
-                                    )}
-                                    {parsedProfile.phone && (
-                                        <span><Phone size={13} /> {parsedProfile.phone}</span>
-                                    )}
-                                    {parsedProfile.location && (
-                                        <span><MapPin size={13} /> {parsedProfile.location}</span>
-                                    )}
-                                    {parsedProfile.linkedin && (
-                                        <span><Linkedin size={13} /> LinkedIn</span>
-                                    )}
-                                    {parsedProfile.github && (
-                                        <span><Github size={13} /> GitHub/Portfolio</span>
-                                    )}
+                                    {parsedProfile.email && <span><Mail size={13} /> {parsedProfile.email}</span>}
+                                    {parsedProfile.phone && <span><Phone size={13} /> {parsedProfile.phone}</span>}
+                                    {parsedProfile.location && <span><MapPin size={13} /> {parsedProfile.location}</span>}
                                 </div>
                             </div>
                         </div>
 
-                        {/* Summary */}
                         {parsedProfile.summary && (
                             <div className="parsed-section">
                                 <h3 className="parsed-section-title"><User size={15} /> Professional Summary</h3>
@@ -438,36 +603,25 @@ const Result = () => {
                             </div>
                         )}
 
-                        {/* Extracted Skills Categorized */}
                         <div className="parsed-section">
                             <h3 className="parsed-section-title"><Code size={15} /> Extracted Skills Inventory</h3>
                             <div className="parsed-skills-grid">
-                                {parsedProfile.hardSkills?.length > 0 && (
+                                {candidateSkills.length > 0 && (
                                     <div className="psg-block">
                                         <h4>Hard & Technical Skills</h4>
                                         <div className="psg-tags">
-                                            {parsedProfile.hardSkills.map((s, i) => (
+                                            {candidateSkills.map((s, i) => (
                                                 <span key={i} className="psg-tag">{s}</span>
                                             ))}
                                         </div>
                                     </div>
                                 )}
-                                {parsedProfile.toolsAndFrameworks?.length > 0 && (
+                                {candidateTools.length > 0 && (
                                     <div className="psg-block">
-                                        <h4>Frameworks, Tools & Cloud</h4>
+                                        <h4>Frameworks & Tools</h4>
                                         <div className="psg-tags">
-                                            {parsedProfile.toolsAndFrameworks.map((t, i) => (
+                                            {candidateTools.map((t, i) => (
                                                 <span key={i} className="psg-tag psg-tag--tool">{t}</span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-                                {parsedProfile.softSkills?.length > 0 && (
-                                    <div className="psg-block">
-                                        <h4>Soft Skills & Leadership</h4>
-                                        <div className="psg-tags">
-                                            {parsedProfile.softSkills.map((s, i) => (
-                                                <span key={i} className="psg-tag psg-tag--soft">{s}</span>
                                             ))}
                                         </div>
                                     </div>
@@ -475,7 +629,6 @@ const Result = () => {
                             </div>
                         </div>
 
-                        {/* Experience */}
                         {parsedProfile.experience?.length > 0 && (
                             <div className="parsed-section">
                                 <h3 className="parsed-section-title"><Briefcase size={15} /> Work Experience</h3>
@@ -502,7 +655,6 @@ const Result = () => {
                             </div>
                         )}
 
-                        {/* Education */}
                         {parsedProfile.education?.length > 0 && (
                             <div className="parsed-section">
                                 <h3 className="parsed-section-title"><GraduationCap size={15} /> Education & Credentials</h3>
@@ -525,7 +677,7 @@ const Result = () => {
                 return (
                     <div className="questions-view">
                         <div className="view-intro">
-                            <p>Questions tailored to evaluate the candidate's depth in critical JD skill requirements.</p>
+                            <p>Targeted technical interview questions designed to probe candidate depth on critical job requirements.</p>
                         </div>
                         {technicalQuestions.length === 0 ? (
                             <p className="result-empty-text">No technical questions generated.</p>
@@ -547,7 +699,7 @@ const Result = () => {
                 return (
                     <div className="questions-view">
                         <div className="view-intro">
-                            <p>Situational and cultural questions structured to practice the STAR methodology.</p>
+                            <p>Situational and behavioral questions structured for the STAR interview methodology.</p>
                         </div>
                         {behavioralQuestions.length === 0 ? (
                             <p className="result-empty-text">No behavioral questions generated.</p>
@@ -572,7 +724,7 @@ const Result = () => {
                             <div className="all-matched-banner">
                                 <CheckCircle2 size={32} className="text-success" />
                                 <h3>Zero Gaps Detected!</h3>
-                                <p>Candidate resume fully matches all stated core skills in the job description.</p>
+                                <p>Candidate resume fully covers all stated core skills in the target job posting.</p>
                             </div>
                         ) : (
                             <div className="skill-gaps-list">
@@ -591,7 +743,7 @@ const Result = () => {
                                             </div>
                                             {gap.recommendation && (
                                                 <p className="sg-recommendation">
-                                                    <strong>💡 Action Plan:</strong> {gap.recommendation}
+                                                    <strong>💡 Remediation:</strong> {gap.recommendation}
                                                 </p>
                                             )}
                                         </div>
@@ -641,7 +793,7 @@ const Result = () => {
                     <span>Dashboard</span>
                 </button>
                 <div className="result-nav-title">
-                    <span>{jobRole}</span> · ATS Evaluation & Interview Suite
+                    <span>{candidateName}</span> · {jobRole} Evaluation
                 </div>
                 <div className="result-nav-right">
                     <ThemeToggle />
@@ -651,7 +803,7 @@ const Result = () => {
 
             {/* ── 3-Column Layout ── */}
             <div className="result-3col">
-                {/* ── LEFT: TOC / Index ── */}
+                {/* ── LEFT: TOC / Navigation Index ── */}
                 <aside className="result-col-left">
                     <div className="sidebar-title-card">
                         <h2>{SECTIONS.find(s => s.id === activeSection)?.label}</h2>
@@ -674,45 +826,29 @@ const Result = () => {
                     </div>
                 </main>
 
-                {/* ── RIGHT: Score + Section Selector + Action ── */}
+                {/* ── RIGHT: Hero Score & Section Switchers & Action ── */}
                 <aside className="result-col-right">
-                    {/* Score Card */}
+                    {/* Hero Overall Score Card */}
                     <div className="score-card">
-                        <div className="score-card-grid">
-                            {/* Score Ring */}
-                            <div className="sc-ring-box">
-                                <ScoreRing score={matchScore} />
+                        <HeroScoreRing score={matchScore} role={jobRole} />
+                        
+                        <div className="sc-quick-metrics">
+                            <div className="sc-q-item">
+                                <span className="sc-q-val">{matchedKeywords.length}</span>
+                                <span className="sc-q-label">Matched Skills</span>
                             </div>
-
-                            {/* Stats */}
-                            <div className="sc-stats-box">
-                                <div className="sc-stat">
-                                    <span className="sc-stat-value">{matchedKeywords.length} / {totalKeywords || 10}</span>
-                                    <span className="sc-stat-label">Keywords</span>
-                                </div>
-                                <div className="sc-stat">
-                                    <span className="sc-stat-value">{technicalQuestions.length}</span>
-                                    <span className="sc-stat-label">Tech Qs</span>
-                                </div>
-                                <div className="sc-stat">
-                                    <span className="sc-stat-value">{behavioralQuestions.length}</span>
-                                    <span className="sc-stat-label">Behavioral</span>
-                                </div>
-                                <div className="sc-stat">
-                                    <span className="sc-stat-value">{skillGaps.length}</span>
-                                    <span className="sc-stat-label">Gaps</span>
-                                </div>
+                            <div className="sc-q-item">
+                                <span className="sc-q-val">{technicalQuestions.length}</span>
+                                <span className="sc-q-label">Tech Qs</span>
                             </div>
-
-                            {/* Title banner */}
-                            <div className="sc-title-box">
-                                <h3>{jobRole}</h3>
-                                <p>ATS-grade match comparison & interview readiness analysis</p>
+                            <div className="sc-q-item">
+                                <span className="sc-q-val">{skillGaps.length}</span>
+                                <span className="sc-q-label">Skill Gaps</span>
                             </div>
                         </div>
                     </div>
 
-                    {/* Section Selector Buttons */}
+                    {/* Section Selector Navigation */}
                     <div className="section-nav">
                         {SECTIONS.map((sec) => {
                             const SecIcon = sec.icon;
