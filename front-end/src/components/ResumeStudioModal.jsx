@@ -808,16 +808,19 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                             style={{ 
                                 width: `${a4BaseWidth * effectiveScale}px`,
                                 height: `${a4BaseHeight * effectiveScale}px`,
-                                margin: '0 auto'
+                                margin: 'auto'
                             }}
                         >
                             <article 
                                 className="a4-resume-sheet"
                                 style={{
+                                    width: `${a4BaseWidth}px`,
+                                    height: `${a4BaseHeight}px`,
                                     transform: `scale(${effectiveScale})`,
-                                    transformOrigin: 'top center',
-                                    left: '50%',
-                                    marginLeft: `-${a4BaseWidth / 2}px`
+                                    transformOrigin: '0 0',
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0
                                 }}
                             >
                                 {/* Header */}
