@@ -388,9 +388,11 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                     </div>
                                     <div className="form-group">
                                         <textarea 
-                                            rows={4}
+                                            rows={6}
+                                            className="form-textarea-tall"
                                             value={resumeData.summary} 
                                             onChange={e => setResumeData({...resumeData, summary: e.target.value})} 
+                                            placeholder="Write your comprehensive executive summary..."
                                         />
                                     </div>
                                 </div>
@@ -401,13 +403,14 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                 <div className="form-section">
                                     <div className="fs-header">
                                         <h4>5-Pillar Core Competencies Matrix</h4>
-                                        <p>Structured keyword matrix matched against target job requirements.</p>
+                                        <p>Structured keyword matrix matched against target job requirements. Type freely with full multi-line visibility.</p>
                                     </div>
 
                                     <div className="form-group">
                                         <label>Languages & Core Runtimes</label>
-                                        <input 
-                                            type="text" 
+                                        <textarea 
+                                            rows={2}
+                                            className="form-textarea-skill"
                                             value={resumeData.skills.languages} 
                                             onChange={e => setResumeData({
                                                 ...resumeData, 
@@ -418,8 +421,9 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
 
                                     <div className="form-group">
                                         <label>Frontend Frameworks & UI Architecture</label>
-                                        <input 
-                                            type="text" 
+                                        <textarea 
+                                            rows={2}
+                                            className="form-textarea-skill"
                                             value={resumeData.skills.frontend} 
                                             onChange={e => setResumeData({
                                                 ...resumeData, 
@@ -430,8 +434,9 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
 
                                     <div className="form-group">
                                         <label>Backend, Microservices & API Design</label>
-                                        <input 
-                                            type="text" 
+                                        <textarea 
+                                            rows={2}
+                                            className="form-textarea-skill"
                                             value={resumeData.skills.backend} 
                                             onChange={e => setResumeData({
                                                 ...resumeData, 
@@ -442,8 +447,9 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
 
                                     <div className="form-group">
                                         <label>Databases & In-Memory Storage</label>
-                                        <input 
-                                            type="text" 
+                                        <textarea 
+                                            rows={2}
+                                            className="form-textarea-skill"
                                             value={resumeData.skills.databases} 
                                             onChange={e => setResumeData({
                                                 ...resumeData, 
@@ -454,8 +460,9 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
 
                                     <div className="form-group">
                                         <label>Cloud, DevOps & Automation Tooling</label>
-                                        <input 
-                                            type="text" 
+                                        <textarea 
+                                            rows={2}
+                                            className="form-textarea-skill"
                                             value={resumeData.skills.tools} 
                                             onChange={e => setResumeData({
                                                 ...resumeData, 
@@ -505,7 +512,7 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
 
                                             <div className="form-grid-2">
                                                 <div className="form-group">
-                                                    <label>Duration</label>
+                                                    <label>Duration / Dates</label>
                                                     <input 
                                                         type="text" 
                                                         value={exp.duration} 
@@ -530,11 +537,12 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                                 </div>
                                             </div>
 
-                                            <label className="bullets-label">STAR Achievement Bullets:</label>
+                                            <label className="bullets-label">STAR Achievement Bullets (Spacious Multi-Line View):</label>
                                             {exp.highlights.map((bullet, bIdx) => (
                                                 <div key={bIdx} className="bullet-row-editor">
                                                     <textarea 
-                                                        rows={2}
+                                                        rows={4}
+                                                        className="form-textarea-bullet"
                                                         value={bullet} 
                                                         onChange={e => handleUpdateExpBullet(expIdx, bIdx, e.target.value)} 
                                                     />
@@ -543,12 +551,12 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                                         onClick={() => handleRemoveExpBullet(expIdx, bIdx)}
                                                         title="Delete Bullet"
                                                     >
-                                                        <Trash2 size={13} />
+                                                        <Trash2 size={15} />
                                                     </button>
                                                 </div>
                                             ))}
                                             <button className="btn-add-bullet" onClick={() => handleAddExpBullet(expIdx)}>
-                                                <Plus size={13} /> Add Achievement Bullet
+                                                <Plus size={14} /> Add Achievement Bullet
                                             </button>
                                         </div>
                                     ))}
@@ -592,11 +600,12 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                                 </div>
                                             </div>
 
-                                            <label className="bullets-label">Project Highlights:</label>
+                                            <label className="bullets-label">Project Highlights (Spacious View):</label>
                                             {proj.highlights.map((bullet, bIdx) => (
                                                 <div key={bIdx} className="bullet-row-editor">
                                                     <textarea 
-                                                        rows={2}
+                                                        rows={3}
+                                                        className="form-textarea-bullet"
                                                         value={bullet} 
                                                         onChange={e => handleUpdateProjBullet(pIdx, bIdx, e.target.value)} 
                                                     />
@@ -652,9 +661,10 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                             </div>
                                         </div>
                                         <div className="form-group">
-                                            <label>GPA & Coursework</label>
-                                            <input 
-                                                type="text" 
+                                            <label>GPA & Relevant Coursework Details</label>
+                                            <textarea 
+                                                rows={3}
+                                                className="form-textarea-bullet"
                                                 value={resumeData.education.details} 
                                                 onChange={e => setResumeData({
                                                     ...resumeData, 
@@ -668,7 +678,7 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                         <h4>Certifications & Badges</h4>
                                     </div>
                                     {resumeData.certifications.map((cert, cIdx) => (
-                                        <div key={cIdx} className="form-group" style={{ marginBottom: 8 }}>
+                                        <div key={cIdx} className="form-group" style={{ marginBottom: 10 }}>
                                             <input 
                                                 type="text" 
                                                 value={cert} 
@@ -692,9 +702,10 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                     </div>
 
                                     {(resumeData.achievements || []).map((ach, aIdx) => (
-                                        <div key={aIdx} className="form-group" style={{ marginBottom: 10 }}>
+                                        <div key={aIdx} className="form-group" style={{ marginBottom: 12 }}>
                                             <textarea 
-                                                rows={2}
+                                                rows={3}
+                                                className="form-textarea-bullet"
                                                 value={ach} 
                                                 onChange={e => {
                                                     const newAch = [...(resumeData.achievements || [])];

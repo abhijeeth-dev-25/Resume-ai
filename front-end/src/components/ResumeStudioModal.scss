@@ -186,12 +186,12 @@
 /* ── Split Body ── */
 .studio-body {
   display: grid;
-  grid-template-columns: 560px 1fr;
+  grid-template-columns: minmax(660px, 1.18fr) 1fr;
   flex: 1;
   overflow: hidden;
 
-  @media (max-width: 1180px) {
-    grid-template-columns: 480px 1fr;
+  @media (max-width: 1300px) {
+    grid-template-columns: minmax(560px, 1fr) 1fr;
   }
 
   @media (max-width: 960px) {
@@ -211,8 +211,8 @@
     display: flex;
     border-bottom: 1px solid var(--border-color, #e2e8f0);
     background: var(--bg-surface-elevated, #f8fafc);
-    padding: 6px 12px 0 12px;
-    gap: 4px;
+    padding: 8px 16px 0 16px;
+    gap: 6px;
     overflow-x: auto;
     scrollbar-width: none;
     &::-webkit-scrollbar { display: none; }
@@ -220,15 +220,15 @@
     .et-tab {
       display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 9px 13px;
-      font-size: 0.82rem;
+      gap: 7px;
+      padding: 10px 16px;
+      font-size: 0.86rem;
       font-weight: 700;
       color: var(--text-secondary, #64748b);
       background: transparent;
       border: none;
       border-bottom: 2.5px solid transparent;
-      border-radius: 6px 6px 0 0;
+      border-radius: 8px 8px 0 0;
       white-space: nowrap;
       cursor: pointer;
       transition: all 0.15s ease;
@@ -242,7 +242,7 @@
         color: #d97706;
         border-bottom-color: #d97706;
         background: var(--bg-surface, #ffffff);
-        box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.03);
+        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
       }
     }
   }
@@ -250,28 +250,29 @@
   .editor-form-scroll {
     flex: 1;
     overflow-y: auto;
-    padding: 22px;
+    padding: 26px 28px;
 
     .form-section {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 16px;
 
       .fs-header {
-        margin-bottom: 4px;
+        margin-bottom: 6px;
 
         h4 {
           margin: 0;
-          font-size: 0.95rem;
+          font-size: 1.02rem;
           font-weight: 800;
           color: var(--text-primary, #0f172a);
           letter-spacing: -0.01em;
         }
 
         p {
-          margin: 2px 0 0 0;
-          font-size: 0.78rem;
+          margin: 3px 0 0 0;
+          font-size: 0.82rem;
           color: var(--text-secondary, #64748b);
+          line-height: 1.4;
         }
       }
     }
@@ -279,22 +280,22 @@
     .form-grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      gap: 14px;
     }
 
     .form-grid-3 {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
+      gap: 12px;
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 6px;
 
       label {
-        font-size: 0.76rem;
+        font-size: 0.78rem;
         font-weight: 700;
         color: var(--text-secondary, #64748b);
         text-transform: uppercase;
@@ -303,64 +304,87 @@
 
       input, textarea {
         width: 100%;
-        padding: 9px 12px;
-        border-radius: 8px;
+        padding: 10px 14px;
+        border-radius: 9px;
         border: 1.5px solid var(--border-color, #cbd5e1);
         background: var(--bg-input, #ffffff);
         color: var(--text-primary, #0f172a);
-        font-size: 0.86rem;
-        font-family: inherit;
-        line-height: 1.45;
+        font-size: 0.9rem;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.55;
         transition: all 0.15s ease;
 
         &:focus {
           outline: none;
           border-color: #d97706;
-          box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
+          box-shadow: 0 0 0 3.5px rgba(217, 119, 6, 0.15);
         }
+      }
+
+      .form-textarea-tall {
+        min-height: 120px;
+        resize: vertical;
+      }
+
+      .form-textarea-skill {
+        min-height: 58px;
+        resize: vertical;
+      }
+
+      .form-textarea-bullet {
+        min-height: 84px;
+        resize: vertical;
       }
     }
 
     .item-card-editor {
       background: var(--bg-surface-elevated, #f8fafc);
       border: 1px solid var(--border-color, #e2e8f0);
-      border-radius: 12px;
-      padding: 16px;
+      border-radius: 14px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      margin-bottom: 14px;
+      gap: 14px;
+      margin-bottom: 18px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 
       .bullets-label {
-        font-size: 0.78rem;
+        font-size: 0.8rem;
         font-weight: 800;
         color: var(--text-primary, #0f172a);
         text-transform: uppercase;
-        margin-top: 4px;
+        margin-top: 6px;
+        letter-spacing: 0.3px;
       }
 
       .bullet-row-editor {
         display: flex;
-        gap: 8px;
+        gap: 10px;
         align-items: flex-start;
 
         textarea {
           flex: 1;
+          min-height: 84px;
+          resize: vertical;
         }
 
         .btn-del-bullet {
-          padding: 8px;
+          padding: 10px 12px;
           border: 1px solid rgba(239, 68, 68, 0.2);
           background: rgba(239, 68, 68, 0.06);
           color: #ef4444;
-          border-radius: 8px;
+          border-radius: 9px;
           cursor: pointer;
           transition: all 0.15s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-top: 2px;
 
           &:hover {
             background: #ef4444;
             color: #ffffff;
+            transform: scale(1.05);
           }
         }
       }
@@ -369,16 +393,17 @@
         align-self: flex-start;
         display: inline-flex;
         align-items: center;
-        gap: 5px;
-        padding: 6px 12px;
-        font-size: 0.78rem;
+        gap: 6px;
+        padding: 8px 16px;
+        font-size: 0.82rem;
         font-weight: 700;
-        border-radius: 6px;
+        border-radius: 8px;
         background: rgba(217, 119, 6, 0.1);
         color: #d97706;
         border: 1px solid rgba(217, 119, 6, 0.25);
         cursor: pointer;
         transition: all 0.15s ease;
+        margin-top: 4px;
 
         &:hover {
           background: rgba(217, 119, 6, 0.2);
