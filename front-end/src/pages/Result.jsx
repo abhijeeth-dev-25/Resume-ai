@@ -233,6 +233,154 @@ const APTITUDE_AND_LOGIC = [
     }
 ];
 
+// ── Curated Practice Platforms & External Learning Hub ─────────────────────────
+const CURATED_PRACTICE_RESOURCES = [
+    {
+        category: "Algorithmic & Coding Practice",
+        icon: Terminal,
+        tagColor: "var(--accent)",
+        resources: [
+            {
+                name: "LeetCode Top Interview 150",
+                url: "https://leetcode.com/problemset/all/?listId=wpwgkgt",
+                desc: "The essential 150 curated questions asked in Tier-1 tech interviews.",
+                badge: "Top 150"
+            },
+            {
+                name: "NeetCode 150 Roadmap",
+                url: "https://neetcode.io/practice",
+                desc: "Pattern-by-pattern DSA roadmap with clean video explanations.",
+                badge: "Roadmap"
+            },
+            {
+                name: "HackerRank Practice Kit",
+                url: "https://www.hackerrank.com/interview/interview-preparation-kit",
+                desc: "Timed mock screening assessments and language drills.",
+                badge: "Timed Drills"
+            }
+        ]
+    },
+    {
+        category: "System Design & Distributed Systems",
+        icon: Layers,
+        tagColor: "var(--violet)",
+        resources: [
+            {
+                name: "System Design Primer",
+                url: "https://github.com/donnemartin/system-design-primer",
+                desc: "Open-source guide to designing scalable, fault-tolerant architectures.",
+                badge: "Open Source"
+            },
+            {
+                name: "ByteByteGo Architecture Guide",
+                url: "https://bytebytego.com/",
+                desc: "Visual diagrams and deep dives into real-world tech architectures.",
+                badge: "Visual Guides"
+            },
+            {
+                name: "High Scalability Case Studies",
+                url: "http://highscalability.com/",
+                desc: "Real-world writeups on scaling to millions of concurrent requests.",
+                badge: "Case Studies"
+            }
+        ]
+    },
+    {
+        category: "Aptitude, Logic & CS Fundamentals",
+        icon: Brain,
+        tagColor: "var(--success)",
+        resources: [
+            {
+                name: "GeeksforGeeks Quantitative Aptitude",
+                url: "https://www.geeksforgeeks.org/quantitative-aptitude-questions/",
+                desc: "Speed math, probability, logic puzzles, and aptitude screening questions.",
+                badge: "Aptitude"
+            },
+            {
+                name: "IndiaBIX Online Assessment Tests",
+                url: "https://www.indiabix.com/online-test/aptitude-test/",
+                desc: "MNC and campus screening practice tests with step-by-step logic.",
+                badge: "Mock Tests"
+            },
+            {
+                name: "TeachYourselfCS",
+                url: "https://teachyourselfcs.com/",
+                desc: "Definitive guide to Operating Systems, Concurrency, and Computer Networks.",
+                badge: "CS Core"
+            }
+        ]
+    },
+    {
+        category: "Behavioral STAR & Leadership",
+        icon: UserCheck,
+        tagColor: "#38BDF8",
+        resources: [
+            {
+                name: "Tech Interview Handbook (Behavioral)",
+                url: "https://www.techinterviewhandbook.org/behavioral-interview/",
+                desc: "STAR framework responses, leadership questions, and incident retrospectives.",
+                badge: "STAR Method"
+            },
+            {
+                name: "Levels.fyi Interview Insights",
+                url: "https://www.levels.fyi/",
+                desc: "Real company interview formats, leveling criteria, and compensation stats.",
+                badge: "Company Intel"
+            }
+        ]
+    }
+];
+
+// ── Practice Resources Component ───────────────────────────────────────────────
+const PracticeResourcesFooter = () => (
+    <div className="practice-resources-section">
+        <div className="prs-header">
+            <div className="prs-title-row">
+                <BookOpen size={18} className="text-accent" />
+                <h3>Curated Practice Platforms & Deep-Dive Resources</h3>
+            </div>
+            <p className="prs-subtitle">
+                Explore hand-curated platforms, roadmaps, and repositories to accelerate your coding, aptitude, and system design preparation.
+            </p>
+        </div>
+
+        <div className="prs-categories-grid">
+            {CURATED_PRACTICE_RESOURCES.map((cat, i) => {
+                const CatIcon = cat.icon;
+                return (
+                    <div key={i} className="prs-cat-card">
+                        <div className="prs-cat-head">
+                            <CatIcon size={16} style={{ color: cat.tagColor }} />
+                            <h4>{cat.category}</h4>
+                        </div>
+
+                        <div className="prs-links-list">
+                            {cat.resources.map((res, j) => (
+                                <a
+                                    key={j}
+                                    href={res.url}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="prs-link-item"
+                                >
+                                    <div className="prs-link-info">
+                                        <div className="prs-link-name-row">
+                                            <span className="prs-link-name">{res.name}</span>
+                                            <span className="prs-link-badge">{res.badge}</span>
+                                        </div>
+                                        <p className="prs-link-desc">{res.desc}</p>
+                                    </div>
+                                    <ExternalLink size={14} className="prs-link-arrow" />
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+                );
+            })}
+        </div>
+    </div>
+);
+
 // ── Navigation Sections ────────────────────────────────────────────────────────
 const SECTIONS = [
     { id: 'overview',     label: 'Persona & Fit Overview', icon: UserCheck },
@@ -699,6 +847,9 @@ const Result = () => {
                                 </div>
                             </div>
                         </div>
+
+                        {/* Practice & Resources Link Footer */}
+                        <PracticeResourcesFooter />
                     </div>
                 );
 
@@ -760,6 +911,9 @@ const Result = () => {
                                 </div>
                             ))}
                         </div>
+
+                        {/* Practice & Resources Link Footer */}
+                        <PracticeResourcesFooter />
                     </div>
                 );
 
@@ -785,6 +939,9 @@ const Result = () => {
                                 </div>
                             ))}
                         </div>
+
+                        {/* Practice & Resources Link Footer */}
+                        <PracticeResourcesFooter />
                     </div>
                 );
 
@@ -1280,6 +1437,7 @@ const Result = () => {
                                 ))}
                             </div>
                         )}
+                        <PracticeResourcesFooter />
                     </div>
                 );
         }
