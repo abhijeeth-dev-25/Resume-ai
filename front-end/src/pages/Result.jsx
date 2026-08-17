@@ -1287,16 +1287,41 @@ const Result = () => {
 
     return (
         <div className="result-layout">
-            {/* ── Navbar ── */}
+            {/* ── Navbar with Always-Visible Quick Actions ── */}
             <header className="result-nav glass-panel">
                 <button className="result-nav-back" onClick={() => navigate('/')} type="button">
                     <ArrowLeft size={16} />
                     <span>Dashboard</span>
                 </button>
                 <div className="result-nav-title">
-                    <span>{candidateName}</span> · {jobRole} Master Preparation Suite
+                    <span>{candidateName}</span> · {jobRole} Master Suite
                 </div>
+                
+                {/* ── Quick Action Download Pills in Navbar (Always Visible) ── */}
                 <div className="result-nav-right">
+                    <div className="nav-downloads-group">
+                        <button
+                            className="nav-dl-btn nav-dl-btn--prep"
+                            onClick={handleDownloadPrepGuide}
+                            disabled={downloadingPrepGuide}
+                            title="Download Master Interview Preparation Guide PDF"
+                            type="button"
+                        >
+                            {downloadingPrepGuide ? <Loader2 size={13} className="animate-spin" /> : <BookOpen size={13} />}
+                            <span>Prep Guide PDF</span>
+                        </button>
+                        <button
+                            className="nav-dl-btn nav-dl-btn--resume"
+                            onClick={handleDownloadResume}
+                            disabled={downloadingResume}
+                            title="Download Tailored ATS Resume PDF"
+                            type="button"
+                        >
+                            {downloadingResume ? <Loader2 size={13} className="animate-spin" /> : <Sparkles size={13} />}
+                            <span>Tailored Resume</span>
+                        </button>
+                    </div>
+
                     <ThemeToggle />
                     <Button variant="secondary" size="sm" onClick={logout}>Logout</Button>
                 </div>
@@ -1327,7 +1352,7 @@ const Result = () => {
                     </div>
                 </main>
 
-                {/* ── RIGHT: Hero Score, Master Downloads & Navigation ── */}
+                {/* ── RIGHT: Hero Score, PROMINENT Top Downloads & Navigation ── */}
                 <aside className="result-col-right">
                     {/* Hero Overall Score Card */}
                     <div className="score-card">
@@ -1349,8 +1374,53 @@ const Result = () => {
                         </div>
                     </div>
 
-                    {/* Section Selector Navigation */}
+                    {/* PROMINENT TOP DOWNLOAD ACTIONS (Always at top of sidebar!) */}
+                    <div className="sidebar-downloads-box">
+                        <span className="sdb-title">Export & Practice Kits</span>
+                        <button
+                            className={`download-btn download-btn--prep ${downloadingPrepGuide ? 'download-btn--loading' : ''}`}
+                            onClick={handleDownloadPrepGuide}
+                            disabled={downloadingPrepGuide}
+                            type="button"
+                        >
+                            {downloadingPrepGuide ? (
+                                <>
+                                    <div className="download-btn-shimmer" />
+                                    <Loader2 size={16} className="animate-spin" />
+                                    <span>GENERATING PREP GUIDE...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <BookOpen size={16} />
+                                    <span>DOWNLOAD PREP GUIDE (PDF)</span>
+                                </>
+                            )}
+                        </button>
+
+                        <button
+                            className={`download-btn download-btn--resume ${downloadingResume ? 'download-btn--loading' : ''}`}
+                            onClick={handleDownloadResume}
+                            disabled={downloadingResume}
+                            type="button"
+                        >
+                            {downloadingResume ? (
+                                <>
+                                    <div className="download-btn-shimmer" />
+                                    <Loader2 size={16} className="animate-spin" />
+                                    <span>GENERATING RESUME...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Sparkles size={16} />
+                                    <span>DOWNLOAD TAILORED RESUME</span>
+                                </>
+                            )}
+                        </button>
+                    </div>
+
+                    {/* Section Selector Navigation (Sleek and scrollable if needed) */}
                     <div className="section-nav">
+                        <span className="sdb-title">Evaluation Modules</span>
                         {SECTIONS.map((sec) => {
                             const SecIcon = sec.icon;
                             return (
@@ -1360,52 +1430,12 @@ const Result = () => {
                                     className={`section-nav-btn ${activeSection === sec.id ? 'section-nav-btn--active' : ''}`}
                                     onClick={() => setActiveSection(sec.id)}
                                 >
-                                    <SecIcon size={16} />
+                                    <SecIcon size={15} />
                                     <span>{sec.label}</span>
                                 </button>
                             );
                         })}
                     </div>
-
-                    {/* Download Master Preparation Guide CTA */}
-                    <button
-                        className={`download-btn download-btn--prep ${downloadingPrepGuide ? 'download-btn--loading' : ''}`}
-                        onClick={handleDownloadPrepGuide}
-                        disabled={downloadingPrepGuide}
-                    >
-                        {downloadingPrepGuide ? (
-                            <>
-                                <div className="download-btn-shimmer" />
-                                <Loader2 size={18} className="animate-spin" />
-                                <span>GENERATING PREP GUIDE...</span>
-                            </>
-                        ) : (
-                            <>
-                                <BookOpen size={18} />
-                                <span>DOWNLOAD PREP GUIDE (PDF)</span>
-                            </>
-                        )}
-                    </button>
-
-                    {/* Download AI Resume CTA */}
-                    <button
-                        className={`download-btn download-btn--resume ${downloadingResume ? 'download-btn--loading' : ''}`}
-                        onClick={handleDownloadResume}
-                        disabled={downloadingResume}
-                    >
-                        {downloadingResume ? (
-                            <>
-                                <div className="download-btn-shimmer" />
-                                <Loader2 size={18} className="animate-spin" />
-                                <span>GENERATING RESUME...</span>
-                            </>
-                        ) : (
-                            <>
-                                <Sparkles size={18} />
-                                <span>DOWNLOAD TAILORED RESUME</span>
-                            </>
-                        )}
-                    </button>
                 </aside>
             </div>
         </div>

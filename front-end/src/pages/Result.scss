@@ -74,6 +74,60 @@
     gap: 0.65rem;
 }
 
+.nav-downloads-group {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+
+    @media (max-width: 860px) {
+        display: none;
+    }
+}
+
+.nav-dl-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.42rem 0.8rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.78rem;
+    font-weight: 700;
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    border: none;
+    transition: all var(--transition);
+    white-space: nowrap;
+
+    &--prep {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #ffffff;
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+
+        &:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45);
+        }
+    }
+
+    &--resume {
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+        color: var(--text-on-accent);
+        box-shadow: 0 2px 8px var(--accent-glow);
+
+        &:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(245, 166, 35, 0.45);
+        }
+    }
+
+    &:disabled {
+        opacity: 0.8;
+        cursor: not-allowed;
+    }
+}
+
 /* ─── 3-Column Body ─────────────────────── */
 .result-3col {
     flex: 1;
@@ -1814,30 +1868,65 @@
     text-transform: uppercase;
 }
 
+/* ─── Sidebar Downloads Box (Top of Sidebar) ── */
+.sidebar-downloads-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-lg);
+    padding: 1.15rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.sdb-title {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.2rem;
+}
+
 /* Section Navigation Buttons */
 .section-nav {
     display: flex;
     flex-direction: column;
-    gap: 0.45rem;
+    gap: 0.4rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-lg);
+    padding: 1.15rem;
+    box-shadow: var(--shadow-sm);
+    max-height: 380px;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: var(--border-color);
+        border-radius: 99px;
+    }
 }
 
 .section-nav-btn {
     width: 100%;
     display: flex;
     align-items: center;
-    gap: 0.65rem;
+    gap: 0.6rem;
     text-align: left;
-    padding: 0.75rem 1rem;
+    padding: 0.58rem 0.85rem;
     border-radius: var(--radius-md);
-    border: 1.5px solid var(--border-color);
-    background: var(--bg-surface);
+    border: 1.2px solid var(--border-color);
+    background: var(--bg-input);
     color: var(--text-primary);
     font-family: var(--font-display);
-    font-size: 0.88rem;
+    font-size: 0.84rem;
     font-weight: 700;
     cursor: pointer;
     transition: all var(--transition);
-    box-shadow: var(--shadow-sm);
 
     svg {
         color: var(--text-muted);
@@ -1849,7 +1938,7 @@
         border-color: var(--accent);
         color: var(--accent);
         background: var(--bg-hover);
-        transform: translateY(-1px);
+        transform: translateX(2px);
 
         svg {
             color: var(--accent);
@@ -1860,7 +1949,7 @@
         border-color: var(--accent) !important;
         color: var(--accent) !important;
         background: var(--bg-input-focus) !important;
-        box-shadow: 0 0 0 2px var(--accent-glow);
+        box-shadow: 0 0 0 1.5px var(--accent-glow);
 
         svg {
             color: var(--accent) !important;
