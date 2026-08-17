@@ -1329,8 +1329,52 @@ const Result = () => {
 
             {/* ── 3-Column Layout ── */}
             <div className="result-3col">
-                {/* ── LEFT: TOC / Navigation Index ── */}
+                {/* ── LEFT: Master Downloads & TOC Index ── */}
                 <aside className="result-col-left">
+                    {/* Primary Download Kits (Moved to Left Sidebar for Instant Access) */}
+                    <div className="sidebar-downloads-box">
+                        <span className="sdb-title">Download & Export</span>
+                        <button
+                            className={`download-btn download-btn--prep ${downloadingPrepGuide ? 'download-btn--loading' : ''}`}
+                            onClick={handleDownloadPrepGuide}
+                            disabled={downloadingPrepGuide}
+                            type="button"
+                        >
+                            {downloadingPrepGuide ? (
+                                <>
+                                    <div className="download-btn-shimmer" />
+                                    <Loader2 size={16} className="animate-spin" />
+                                    <span>GENERATING GUIDE...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <BookOpen size={16} />
+                                    <span>PREPARATION GUIDE (PDF)</span>
+                                </>
+                            )}
+                        </button>
+
+                        <button
+                            className={`download-btn download-btn--resume ${downloadingResume ? 'download-btn--loading' : ''}`}
+                            onClick={handleDownloadResume}
+                            disabled={downloadingResume}
+                            type="button"
+                        >
+                            {downloadingResume ? (
+                                <>
+                                    <div className="download-btn-shimmer" />
+                                    <Loader2 size={16} className="animate-spin" />
+                                    <span>GENERATING RESUME...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Sparkles size={16} />
+                                    <span>TAILORED RESUME (PDF)</span>
+                                </>
+                            )}
+                        </button>
+                    </div>
+
                     <div className="sidebar-title-card">
                         <h2>{SECTIONS.find(s => s.id === activeSection)?.label}</h2>
                     </div>
@@ -1352,7 +1396,7 @@ const Result = () => {
                     </div>
                 </main>
 
-                {/* ── RIGHT: Hero Score, PROMINENT Top Downloads & Navigation ── */}
+                {/* ── RIGHT: Hero Score & Section Navigation ── */}
                 <aside className="result-col-right">
                     {/* Hero Overall Score Card */}
                     <div className="score-card">
@@ -1374,51 +1418,7 @@ const Result = () => {
                         </div>
                     </div>
 
-                    {/* PROMINENT TOP DOWNLOAD ACTIONS (Always at top of sidebar!) */}
-                    <div className="sidebar-downloads-box">
-                        <span className="sdb-title">Export & Practice Kits</span>
-                        <button
-                            className={`download-btn download-btn--prep ${downloadingPrepGuide ? 'download-btn--loading' : ''}`}
-                            onClick={handleDownloadPrepGuide}
-                            disabled={downloadingPrepGuide}
-                            type="button"
-                        >
-                            {downloadingPrepGuide ? (
-                                <>
-                                    <div className="download-btn-shimmer" />
-                                    <Loader2 size={16} className="animate-spin" />
-                                    <span>GENERATING PREP GUIDE...</span>
-                                </>
-                            ) : (
-                                <>
-                                    <BookOpen size={16} />
-                                    <span>DOWNLOAD PREP GUIDE (PDF)</span>
-                                </>
-                            )}
-                        </button>
-
-                        <button
-                            className={`download-btn download-btn--resume ${downloadingResume ? 'download-btn--loading' : ''}`}
-                            onClick={handleDownloadResume}
-                            disabled={downloadingResume}
-                            type="button"
-                        >
-                            {downloadingResume ? (
-                                <>
-                                    <div className="download-btn-shimmer" />
-                                    <Loader2 size={16} className="animate-spin" />
-                                    <span>GENERATING RESUME...</span>
-                                </>
-                            ) : (
-                                <>
-                                    <Sparkles size={16} />
-                                    <span>DOWNLOAD TAILORED RESUME</span>
-                                </>
-                            )}
-                        </button>
-                    </div>
-
-                    {/* Section Selector Navigation (Sleek and scrollable if needed) */}
+                    {/* Section Selector Navigation */}
                     <div className="section-nav">
                         <span className="sdb-title">Evaluation Modules</span>
                         {SECTIONS.map((sec) => {
