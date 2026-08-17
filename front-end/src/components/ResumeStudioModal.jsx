@@ -1,7 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { 
     X, Download, RotateCcw, Eye, Edit3, User, Briefcase, 
-    Sparkles, GraduationCap, Award, Plus, Trash2, CheckCircle2, Loader2, Maximize2 
+    Sparkles, GraduationCap, Award, Plus, Trash2, CheckCircle2, 
+    Loader2, ZoomIn, ZoomOut, Maximize2, Trophy, Star
 } from 'lucide-react';
 import { interviewService } from '../services/interview.service';
 import './ResumeStudioModal.scss';
@@ -11,7 +12,6 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
 
     const parsedProfile = report.parsedProfile || {};
 
-    // Initial default state derived from report
     const buildInitialData = () => {
         const candidateName = parsedProfile.fullName || "GEDDAM ABHIJEETHKAR";
         const email = parsedProfile.email || "abhijeethkar.geddam.dev@gmail.com";
@@ -32,7 +32,7 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
             languages: "JavaScript (ES6+), TypeScript, Node.js, Python, SQL, HTML5/CSS3",
             frontend: "React.js, Next.js, Redux Toolkit, TailwindCSS, Responsive UI/UX, Webpack, Vite",
             backend: "Express.js, RESTful APIs, GraphQL, WebSockets, Microservices, LangChain, LangGraph",
-            databases: "MongoDB (Mongoose, Aggregation Pipelines, ESR Indexing), PostgreSQL, Redis",
+            databases: "MongoDB (Mongoose, Aggregation Pipelines, ESR Indexing), PostgreSQL, Redis (Caching, TTL)",
             tools: "Docker, Git, GitHub Actions (CI/CD), AWS (S3, EC2), Puppeteer, Google Gemini API, Postman, Linux"
         };
 
@@ -95,6 +95,12 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
             "National AI Hackathon: Top 3 Finalist (Full-Stack Agentic AI)"
         ];
 
+        const achievements = [
+            "National AI Hackathon Finalist: Ranked Top 3 among 1,200+ engineering teams for building an autonomous multi-agent developer workflow platform.",
+            "Open Source Contributor: Active contributor to full-stack JavaScript utilities, authoring reusable middleware and documentation with 400+ GitHub stars.",
+            "Academic Excellence Award: Awarded Departmental Merit Scholarship for outstanding academic performance across 8 consecutive semesters."
+        ];
+
         return {
             candidateName,
             targetRole,
@@ -108,13 +114,15 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
             experience,
             projects,
             education,
-            certifications
+            certifications,
+            achievements
         };
     };
 
     const [resumeData, setResumeData] = useState(buildInitialData);
     const [activeTab, setActiveTab] = useState('personal');
     const [downloading, setDownloading] = useState(false);
+    const [zoomLevel, setZoomLevel] = useState(1);
 
     const handleReset = () => {
         if (window.confirm("Reset all resume edits back to AI defaults?")) {
@@ -142,7 +150,6 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
         }
     };
 
-    // Helper to update experience bullets
     const handleUpdateExpBullet = (expIndex, bulletIndex, value) => {
         setResumeData(prev => {
             const expList = [...prev.experience];
@@ -171,7 +178,6 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
         });
     };
 
-    // Helper to update project bullets
     const handleUpdateProjBullet = (projIndex, bulletIndex, value) => {
         setResumeData(prev => {
             const projList = [...prev.projects];
@@ -186,18 +192,49 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
         <div className="resume-studio-overlay">
             <div className="resume-studio-container">
                 {/* ── Studio Header Bar ── */}
-                <div className="studio-topbar">
+                <header className="studio-topbar">
                     <div className="st-left">
                         <div className="st-badge">
                             <Sparkles size={14} /> LIVE ATS STUDIO
                         </div>
-                        <h2>Resume Preview & Custom Editor</h2>
+                        <div className="st-title-wrap">
+                            <h2>Interactive Resume Studio</h2>
+                            <span className="st-subtitle">Live Preview · Real-Time ATS Editing · 100% Single-Page A4 Precision</span>
+                        </div>
                     </div>
 
                     <div className="st-actions">
+                        {/* Zoom Controls */}
+                        <div className="zoom-controls">
+                            <button 
+                                className="zoom-btn" 
+                                onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.7))}
+                                title="Zoom Out"
+                            >
+                                <ZoomOut size={14} />
+                            </button>
+                            <span className="zoom-label">{Math.round(zoomLevel * 100)}%</span>
+                            <button 
+                                className="zoom-btn" 
+                                onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.3))}
+                                title="Zoom In"
+                            >
+                                <ZoomIn size={14} />
+                            </button>
+                            <button 
+                                className="zoom-btn zoom-btn--fit" 
+                                onClick={() => setZoomLevel(1)}
+                                title="Reset Zoom to 100%"
+                            >
+                                100%
+                            </button>
+                        </div>
+
                         <button className="st-btn st-btn--reset" onClick={handleReset} title="Reset to AI Defaults">
-                            <RotateCcw size={14} /> Reset
+                            <RotateCcw size={14} />
+                            <span>Reset</span>
                         </button>
+                        
                         <button 
                             className="st-btn st-btn--download" 
                             onClick={handleDownloadCustom} 
@@ -215,39 +252,71 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                 </>
                             )}
                         </button>
+
                         <button className="st-btn st-btn--close" onClick={onClose} title="Close Studio">
                             <X size={18} />
                         </button>
                     </div>
-                </div>
+                </header>
 
                 {/* ── Studio Split View ── */}
                 <div className="studio-body">
                     {/* ── LEFT PANEL: Form Editor ── */}
-                    <div className="studio-editor-panel">
-                        <div className="editor-tabs">
-                            <button className={`et-tab ${activeTab === 'personal' ? 'active' : ''}`} onClick={() => setActiveTab('personal')}>
-                                <User size={14} /> Header & Summary
+                    <aside className="studio-editor-panel">
+                        <nav className="editor-nav-tabs">
+                            <button 
+                                className={`et-tab ${activeTab === 'personal' ? 'active' : ''}`} 
+                                onClick={() => setActiveTab('personal')}
+                            >
+                                <User size={15} />
+                                <span>Header</span>
                             </button>
-                            <button className={`et-tab ${activeTab === 'skills' ? 'active' : ''}`} onClick={() => setActiveTab('skills')}>
-                                <Sparkles size={14} /> Technical Skills
+                            <button 
+                                className={`et-tab ${activeTab === 'skills' ? 'active' : ''}`} 
+                                onClick={() => setActiveTab('skills')}
+                            >
+                                <Sparkles size={15} />
+                                <span>Skills</span>
                             </button>
-                            <button className={`et-tab ${activeTab === 'experience' ? 'active' : ''}`} onClick={() => setActiveTab('experience')}>
-                                <Briefcase size={14} /> Work Experience
+                            <button 
+                                className={`et-tab ${activeTab === 'experience' ? 'active' : ''}`} 
+                                onClick={() => setActiveTab('experience')}
+                            >
+                                <Briefcase size={15} />
+                                <span>Experience</span>
                             </button>
-                            <button className={`et-tab ${activeTab === 'projects' ? 'active' : ''}`} onClick={() => setActiveTab('projects')}>
-                                <Award size={14} /> Projects
+                            <button 
+                                className={`et-tab ${activeTab === 'projects' ? 'active' : ''}`} 
+                                onClick={() => setActiveTab('projects')}
+                            >
+                                <Award size={15} />
+                                <span>Projects</span>
                             </button>
-                            <button className={`et-tab ${activeTab === 'education' ? 'active' : ''}`} onClick={() => setActiveTab('education')}>
-                                <GraduationCap size={14} /> Education & Certs
+                            <button 
+                                className={`et-tab ${activeTab === 'education' ? 'active' : ''}`} 
+                                onClick={() => setActiveTab('education')}
+                            >
+                                <GraduationCap size={15} />
+                                <span>Education</span>
                             </button>
-                        </div>
+                            <button 
+                                className={`et-tab ${activeTab === 'achievements' ? 'active' : ''}`} 
+                                onClick={() => setActiveTab('achievements')}
+                            >
+                                <Trophy size={15} />
+                                <span>Achievements</span>
+                            </button>
+                        </nav>
 
                         <div className="editor-form-scroll">
                             {/* TAB 1: PERSONAL & HEADER */}
                             {activeTab === 'personal' && (
                                 <div className="form-section">
-                                    <h4 className="fs-title">Candidate Identity & Contact Bar</h4>
+                                    <div className="fs-header">
+                                        <h4>Candidate Identity & Target Role</h4>
+                                        <p>Clean contact details formatted for automated ATS parser indexing.</p>
+                                    </div>
+
                                     <div className="form-grid-2">
                                         <div className="form-group">
                                             <label>Full Name</label>
@@ -296,7 +365,7 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
 
                                     <div className="form-grid-2">
                                         <div className="form-group">
-                                            <label>LinkedIn URL</label>
+                                            <label>LinkedIn Profile URL</label>
                                             <input 
                                                 type="text" 
                                                 value={resumeData.linkedin} 
@@ -304,7 +373,7 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                             />
                                         </div>
                                         <div className="form-group">
-                                            <label>GitHub URL</label>
+                                            <label>GitHub Profile URL</label>
                                             <input 
                                                 type="text" 
                                                 value={resumeData.github} 
@@ -313,7 +382,10 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                         </div>
                                     </div>
 
-                                    <h4 className="fs-title" style={{ marginTop: 18 }}>Executive Professional Summary</h4>
+                                    <div className="fs-header" style={{ marginTop: 20 }}>
+                                        <h4>Executive Professional Summary</h4>
+                                        <p>Concise, impact-driven overview highlighting your core strengths and architectural expertise.</p>
+                                    </div>
                                     <div className="form-group">
                                         <textarea 
                                             rows={4}
@@ -327,9 +399,13 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                             {/* TAB 2: TECHNICAL SKILLS */}
                             {activeTab === 'skills' && (
                                 <div className="form-section">
-                                    <h4 className="fs-title">Categorized Technical Competency Matrix</h4>
+                                    <div className="fs-header">
+                                        <h4>5-Pillar Core Competencies Matrix</h4>
+                                        <p>Structured keyword matrix matched against target job requirements.</p>
+                                    </div>
+
                                     <div className="form-group">
-                                        <label>Languages & Runtimes</label>
+                                        <label>Languages & Core Runtimes</label>
                                         <input 
                                             type="text" 
                                             value={resumeData.skills.languages} 
@@ -341,7 +417,7 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                     </div>
 
                                     <div className="form-group">
-                                        <label>Frontend & UI Engineering</label>
+                                        <label>Frontend Frameworks & UI Architecture</label>
                                         <input 
                                             type="text" 
                                             value={resumeData.skills.frontend} 
@@ -353,7 +429,7 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                     </div>
 
                                     <div className="form-group">
-                                        <label>Backend & API Architecture</label>
+                                        <label>Backend, Microservices & API Design</label>
                                         <input 
                                             type="text" 
                                             value={resumeData.skills.backend} 
@@ -365,7 +441,7 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                     </div>
 
                                     <div className="form-group">
-                                        <label>Databases & In-Memory Caching</label>
+                                        <label>Databases & In-Memory Storage</label>
                                         <input 
                                             type="text" 
                                             value={resumeData.skills.databases} 
@@ -377,7 +453,7 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                     </div>
 
                                     <div className="form-group">
-                                        <label>Cloud, DevOps & Tooling</label>
+                                        <label>Cloud, DevOps & Automation Tooling</label>
                                         <input 
                                             type="text" 
                                             value={resumeData.skills.tools} 
@@ -393,7 +469,11 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                             {/* TAB 3: WORK EXPERIENCE */}
                             {activeTab === 'experience' && (
                                 <div className="form-section">
-                                    <h4 className="fs-title">Professional Experience (STAR Impact Bullets)</h4>
+                                    <div className="fs-header">
+                                        <h4>Professional Experience</h4>
+                                        <p>Action-oriented bullet points demonstrating metrics, scale, and technical depth.</p>
+                                    </div>
+
                                     {resumeData.experience.map((exp, expIdx) => (
                                         <div key={expIdx} className="item-card-editor">
                                             <div className="form-grid-2">
@@ -425,7 +505,7 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
 
                                             <div className="form-grid-2">
                                                 <div className="form-group">
-                                                    <label>Duration / Dates</label>
+                                                    <label>Duration</label>
                                                     <input 
                                                         type="text" 
                                                         value={exp.duration} 
@@ -468,7 +548,7 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                                 </div>
                                             ))}
                                             <button className="btn-add-bullet" onClick={() => handleAddExpBullet(expIdx)}>
-                                                <Plus size={12} /> Add Achievement Bullet
+                                                <Plus size={13} /> Add Achievement Bullet
                                             </button>
                                         </div>
                                     ))}
@@ -478,7 +558,11 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                             {/* TAB 4: PROJECTS */}
                             {activeTab === 'projects' && (
                                 <div className="form-section">
-                                    <h4 className="fs-title">Featured Engineering & AI Systems</h4>
+                                    <div className="fs-header">
+                                        <h4>Featured Engineering & AI Projects</h4>
+                                        <p>Showcase architectures, frameworks, latency improvements, and live outcomes.</p>
+                                    </div>
+
                                     {resumeData.projects.map((proj, pIdx) => (
                                         <div key={pIdx} className="item-card-editor">
                                             <div className="form-grid-2">
@@ -495,7 +579,7 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                                     />
                                                 </div>
                                                 <div className="form-group">
-                                                    <label>Tech Stack (Comma-separated)</label>
+                                                    <label>Technologies Used</label>
                                                     <input 
                                                         type="text" 
                                                         value={Array.isArray(proj.technologies) ? proj.technologies.join(", ") : proj.technologies} 
@@ -526,7 +610,11 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                             {/* TAB 5: EDUCATION & CERTS */}
                             {activeTab === 'education' && (
                                 <div className="form-section">
-                                    <h4 className="fs-title">Education & Credentials</h4>
+                                    <div className="fs-header">
+                                        <h4>Education & Accreditations</h4>
+                                        <p>Degrees, GPA, relevant computer science coursework, and credentials.</p>
+                                    </div>
+
                                     <div className="item-card-editor">
                                         <div className="form-group">
                                             <label>Degree & Major</label>
@@ -541,7 +629,7 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                         </div>
                                         <div className="form-grid-2">
                                             <div className="form-group">
-                                                <label>University / College</label>
+                                                <label>University / Institution</label>
                                                 <input 
                                                     type="text" 
                                                     value={resumeData.education.institution} 
@@ -564,7 +652,7 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                             </div>
                                         </div>
                                         <div className="form-group">
-                                            <label>GPA & Coursework Details</label>
+                                            <label>GPA & Coursework</label>
                                             <input 
                                                 type="text" 
                                                 value={resumeData.education.details} 
@@ -576,7 +664,9 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                         </div>
                                     </div>
 
-                                    <h4 className="fs-title" style={{ marginTop: 18 }}>Certifications & Honors</h4>
+                                    <div className="fs-header" style={{ marginTop: 16 }}>
+                                        <h4>Certifications & Badges</h4>
+                                    </div>
                                     {resumeData.certifications.map((cert, cIdx) => (
                                         <div key={cIdx} className="form-group" style={{ marginBottom: 8 }}>
                                             <input 
@@ -592,15 +682,39 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                     ))}
                                 </div>
                             )}
+
+                            {/* TAB 6: ACHIEVEMENTS */}
+                            {activeTab === 'achievements' && (
+                                <div className="form-section">
+                                    <div className="fs-header">
+                                        <h4>Key Achievements & Open Source Leadership</h4>
+                                        <p>Awards, hackathons, open-source repositories, and leadership milestones.</p>
+                                    </div>
+
+                                    {(resumeData.achievements || []).map((ach, aIdx) => (
+                                        <div key={aIdx} className="form-group" style={{ marginBottom: 10 }}>
+                                            <textarea 
+                                                rows={2}
+                                                value={ach} 
+                                                onChange={e => {
+                                                    const newAch = [...(resumeData.achievements || [])];
+                                                    newAch[aIdx] = e.target.value;
+                                                    setResumeData({ ...resumeData, achievements: newAch });
+                                                }} 
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
-                    </div>
+                    </aside>
 
                     {/* ── RIGHT PANEL: Real-time Live A4 Document Canvas ── */}
-                    <div className="studio-preview-panel">
-                        <div className="preview-canvas-wrapper">
-                            <div className="a4-resume-sheet">
+                    <main className="studio-preview-panel">
+                        <div className="preview-canvas-scroller" style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top center' }}>
+                            <article className="a4-resume-sheet">
                                 {/* Header */}
-                                <div className="res-header">
+                                <header className="res-header">
                                     <h1>{resumeData.candidateName}</h1>
                                     <div className="res-target-role">{resumeData.targetRole}</div>
                                     <div className="res-contact-bar">
@@ -610,17 +724,17 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                         <span>🔗 {resumeData.linkedin.replace(/^https?:\/\//, '')}</span> •
                                         <span>💻 {resumeData.github.replace(/^https?:\/\//, '')}</span>
                                     </div>
-                                </div>
+                                </header>
 
                                 {/* Summary */}
-                                <div className="res-section">
-                                    <div className="res-section-title">Executive Professional Summary</div>
+                                <section className="res-section">
+                                    <h3 className="res-section-title">Executive Professional Summary</h3>
                                     <p className="res-summary-text">{resumeData.summary}</p>
-                                </div>
+                                </section>
 
                                 {/* Skills */}
-                                <div className="res-section">
-                                    <div className="res-section-title">Technical Skills & Competency Matrix</div>
+                                <section className="res-section">
+                                    <h3 className="res-section-title">Technical Skills & Competency Matrix</h3>
                                     <table className="res-skills-table">
                                         <tbody>
                                             <tr>
@@ -645,11 +759,11 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                             </tr>
                                         </tbody>
                                     </table>
-                                </div>
+                                </section>
 
                                 {/* Experience */}
-                                <div className="res-section">
-                                    <div className="res-section-title">Professional Experience</div>
+                                <section className="res-section">
+                                    <h3 className="res-section-title">Professional Experience</h3>
                                     {resumeData.experience.map((exp, i) => (
                                         <div key={i} className="res-entry">
                                             <div className="res-entry-header">
@@ -666,11 +780,11 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                             </ul>
                                         </div>
                                     ))}
-                                </div>
+                                </section>
 
                                 {/* Projects */}
-                                <div className="res-section">
-                                    <div className="res-section-title">Featured Engineering & AI Systems</div>
+                                <section className="res-section">
+                                    <h3 className="res-section-title">Featured Engineering & AI Systems</h3>
                                     {resumeData.projects.map((proj, i) => (
                                         <div key={i} className="res-entry">
                                             <div className="res-entry-header">
@@ -688,13 +802,13 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                             </ul>
                                         </div>
                                     ))}
-                                </div>
+                                </section>
 
                                 {/* Education & Certs */}
-                                <div className="res-section">
+                                <section className="res-section">
                                     <div className="res-split-grid">
                                         <div className="res-split-col">
-                                            <div className="res-section-title">Education & Credentials</div>
+                                            <h3 className="res-section-title">Education & Credentials</h3>
                                             <div className="res-edu-degree">{resumeData.education.degree}</div>
                                             <div className="res-edu-inst">
                                                 {resumeData.education.institution} 
@@ -706,7 +820,7 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                         </div>
 
                                         <div className="res-split-col">
-                                            <div className="res-section-title">Certifications & Honors</div>
+                                            <h3 className="res-section-title">Certifications & Honors</h3>
                                             {resumeData.certifications.map((c, i) => (
                                                 <div key={i} className="res-cert-item">
                                                     • <strong>{c.split(':')[0] || c}:</strong> {c.split(':')[1] || ''}
@@ -714,11 +828,20 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                                             ))}
                                         </div>
                                     </div>
-                                </div>
+                                </section>
 
-                            </div>
+                                {/* Achievements & Open Source */}
+                                <section className="res-section" style={{ marginBottom: 0 }}>
+                                    <h3 className="res-section-title">Key Achievements & Open Source Contributions</h3>
+                                    <ul className="res-bullets">
+                                        {(resumeData.achievements || []).map((a, i) => (
+                                            <li key={i}>{a}</li>
+                                        ))}
+                                    </ul>
+                                </section>
+                            </article>
                         </div>
-                    </div>
+                    </main>
                 </div>
             </div>
         </div>

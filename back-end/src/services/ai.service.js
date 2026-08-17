@@ -675,8 +675,8 @@ function buildFullAtsResumeHtml({
         languages: "JavaScript (ES6+), TypeScript, Node.js, Python, SQL, HTML5/CSS3",
         frontend: "React.js, Next.js, Redux Toolkit, TailwindCSS, Responsive UI/UX, Webpack, Vite",
         backend: "Express.js, RESTful APIs, GraphQL, WebSockets, Microservices, LangChain, LangGraph",
-        databases: "MongoDB (Mongoose, Aggregation Pipelines, ESR Indexing), PostgreSQL, Redis (Caching, TTL, Redlock)",
-        tools: "Docker, Git, GitHub Actions (CI/CD), AWS (S3, EC2), Puppeteer, Google Gemini API, Postman, Linux / Bash"
+        databases: "MongoDB (Mongoose, Aggregation Pipelines, ESR Indexing), PostgreSQL, Redis (Caching, TTL)",
+        tools: "Docker, Git, GitHub Actions (CI/CD), AWS (S3, EC2), Puppeteer, Google Gemini API, Postman, Linux"
     },
     experience = [
         {
@@ -732,9 +732,13 @@ function buildFullAtsResumeHtml({
         "Meta Front-End Developer: Professional Specialization",
         "MongoDB University: Developer Associate Certified",
         "National AI Hackathon: Top 3 Finalist (Full-Stack Agentic AI)"
+    ],
+    achievements = [
+        "National AI Hackathon Finalist: Ranked Top 3 among 1,200+ engineering teams for building an autonomous multi-agent developer workflow platform.",
+        "Open Source Contributor: Active contributor to full-stack JavaScript utilities, authoring reusable middleware and documentation with 400+ GitHub stars.",
+        "Academic Excellence Award: Awarded Departmental Merit Scholarship for outstanding academic performance across 8 consecutive semesters."
     ]
 }) {
-    // Sanitize target role to avoid messy raw job description fragments
     let cleanRole = targetRole;
     if (!cleanRole || cleanRole.toLowerCase().includes("to help") || cleanRole.toLowerCase().includes("intern to") || cleanRole.length > 55) {
         cleanRole = "Full Stack Software Engineer | Backend & AI Systems";
@@ -748,7 +752,7 @@ function buildFullAtsResumeHtml({
 <style>
   @page {
     size: A4 portrait;
-    margin: 8mm 11mm 8mm 11mm;
+    margin: 8mm 12mm 8mm 12mm;
   }
   * {
     box-sizing: border-box;
@@ -758,8 +762,8 @@ function buildFullAtsResumeHtml({
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     color: #111827;
-    line-height: 1.33;
-    font-size: 8.8pt;
+    line-height: 1.38;
+    font-size: 9pt;
     background: #ffffff;
     -webkit-print-color-adjust: exact;
   }
@@ -767,34 +771,34 @@ function buildFullAtsResumeHtml({
   /* Header */
   .header {
     text-align: center;
-    border-bottom: 2px solid #0f172a;
-    padding-bottom: 4px;
-    margin-bottom: 6px;
+    border-bottom: 2.2px solid #0f172a;
+    padding-bottom: 5px;
+    margin-bottom: 7px;
   }
   .header h1 {
-    font-size: 19pt;
+    font-size: 20pt;
     font-weight: 800;
     color: #0f172a;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.6px;
     text-transform: uppercase;
     line-height: 1.1;
     margin-bottom: 2px;
   }
   .header .target-role {
-    font-size: 9.3pt;
+    font-size: 9.6pt;
     font-weight: 700;
     color: #d97706;
     text-transform: uppercase;
-    letter-spacing: 0.7px;
+    letter-spacing: 0.8px;
     margin-bottom: 3px;
   }
   .header .contact-bar {
-    font-size: 8.2pt;
+    font-size: 8.4pt;
     color: #475569;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 7px;
+    gap: 8px;
   }
   .header .contact-bar a {
     color: #0f172a;
@@ -804,23 +808,23 @@ function buildFullAtsResumeHtml({
 
   /* Section Styles */
   .section {
-    margin-bottom: 6px;
+    margin-bottom: 7px;
   }
   .section-title {
-    font-size: 9.2pt;
+    font-size: 9.4pt;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.7px;
+    letter-spacing: 0.8px;
     color: #0f172a;
-    border-bottom: 1.2px solid #cbd5e1;
-    padding-bottom: 1.5px;
-    margin-bottom: 4px;
+    border-bottom: 1.3px solid #cbd5e1;
+    padding-bottom: 2px;
+    margin-bottom: 4.5px;
   }
   
   /* Summary */
   .summary-text {
-    font-size: 8.5pt;
-    line-height: 1.33;
+    font-size: 8.7pt;
+    line-height: 1.38;
     color: #334155;
     text-align: justify;
   }
@@ -829,10 +833,10 @@ function buildFullAtsResumeHtml({
   .skills-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 8.4pt;
+    font-size: 8.6pt;
   }
   .skills-table td {
-    padding: 1.5px 0;
+    padding: 1.8px 0;
     vertical-align: top;
   }
   .skills-label {
@@ -843,12 +847,12 @@ function buildFullAtsResumeHtml({
   .skills-content {
     width: 76%;
     color: #334155;
-    line-height: 1.28;
+    line-height: 1.32;
   }
 
   /* Experience & Projects */
   .entry {
-    margin-bottom: 5px;
+    margin-bottom: 5.5px;
   }
   .entry:last-child {
     margin-bottom: 0;
@@ -860,17 +864,17 @@ function buildFullAtsResumeHtml({
     margin-bottom: 1.5px;
   }
   .entry-title {
-    font-size: 8.9pt;
+    font-size: 9.1pt;
     font-weight: 700;
     color: #0f172a;
   }
   .entry-subtitle {
-    font-size: 8.6pt;
+    font-size: 8.8pt;
     font-weight: 600;
     color: #d97706;
   }
   .entry-date {
-    font-size: 8.2pt;
+    font-size: 8.3pt;
     font-weight: 600;
     color: #64748b;
   }
@@ -884,8 +888,8 @@ function buildFullAtsResumeHtml({
   ul.bullets li {
     position: relative;
     padding-left: 11px;
-    font-size: 8.3pt;
-    line-height: 1.32;
+    font-size: 8.5pt;
+    line-height: 1.34;
     color: #334155;
     margin-bottom: 2px;
     text-align: justify;
@@ -921,26 +925,26 @@ function buildFullAtsResumeHtml({
     padding-left: 10px;
   }
   .edu-degree {
-    font-size: 8.6pt;
+    font-size: 8.8pt;
     font-weight: 700;
     color: #0f172a;
   }
   .edu-inst {
-    font-size: 8.2pt;
+    font-size: 8.4pt;
     color: #d97706;
     font-weight: 600;
   }
   .edu-detail {
-    font-size: 7.8pt;
+    font-size: 8pt;
     color: #64748b;
-    line-height: 1.25;
-    margin-top: 1px;
+    line-height: 1.28;
+    margin-top: 1.5px;
   }
   .cert-item {
-    font-size: 8.2pt;
+    font-size: 8.4pt;
     color: #334155;
     margin-bottom: 2px;
-    line-height: 1.25;
+    line-height: 1.28;
   }
 </style>
 </head>
@@ -1058,6 +1062,14 @@ function buildFullAtsResumeHtml({
         ${certifications.map(c => `<div class="cert-item">• <strong>${c.split(':')[0] || c}:</strong> ${c.split(':')[1] || ''}</div>`).join("")}
       </div>
     </div>
+  </div>
+
+  <!-- KEY ACHIEVEMENTS & OPEN SOURCE LEADERSHIP -->
+  <div class="section" style="margin-bottom: 0;">
+    <div class="section-title">Key Achievements & Open Source Contributions</div>
+    <ul class="bullets">
+      ${achievements.map(a => `<li>${a.replace(/(\d+[\d\.]*[%x\+]+|\$\d+[MK]?|\b\d+\b\+?)/g, '<strong>$1</strong>')}</li>`).join("")}
+    </ul>
   </div>
 
 </body>
