@@ -155,9 +155,45 @@ async function generateResumePdfController(req, res) {
     }
 }
 
+/**
+ * @name generatePrepGuidePdfController
+ * @description Generate Master Interview Preparation Guide PDF based on interview report.
+ * @access Private
+ */
+async function generatePrepGuidePdfController(req, res) {
+    try {
+        const { interviewReportId } = req.params;
+
+        const interviewReport = await interviewReportModel.findById(interviewReportId);
+
+        if (!interviewReport) {
+            return res.status(404).json({
+                message: "Interview report not found."
+            });
+        }
+
+        const pdfBuffer = await generatePrepGuidePdf({ report: interviewReport });
+
+        res.set({
+            "Content-Type": "application/pdf",
+            "Content-Disposition": `attachment; filename=prep_guide_${interviewReportId}.pdf`
+        });
+
+        return res.send(pdfBuffer);
+
+    } catch (error) {
+        console.error("generatePrepGuidePdfController error:", error);
+        return res.status(500).json({
+            message: "Failed to generate preparation guide PDF",
+            error: error.message
+        });
+    }
+}
+
 module.exports = {
     generateInterViewReportController,
     getMyReportsController,
     getAllInterviewReportsController,
-    generateResumePdfController
+    generateResumePdfController,
+    generatePrepGuidePdfController
 };

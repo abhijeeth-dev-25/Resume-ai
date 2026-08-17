@@ -32,5 +32,16 @@ export const interviewService = {
             responseType: 'blob'
         });
         return response.data;
+    },
+
+    /**
+     * Download the Master Interview Preparation Guide PDF
+     * @param {string} interviewReportId
+     */
+    downloadPrepGuide: async (interviewReportId) => {
+        const response = await api.post(`/interview/prep-guide/pdf/${interviewReportId}`, {}, {
+            responseType: 'blob'
+        });
+        return response.data;
     }
 };

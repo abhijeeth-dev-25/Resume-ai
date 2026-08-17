@@ -21,13 +21,17 @@ interviewRouter.post("/",authMiddleware.authUserMiddleware,upload.single("resume
 interviewRouter.get("/my-reports", authMiddleware.authUserMiddleware, interviewController.getMyReportsController);
 
 /**
- * @route GET /api/interview/resume/pdf
+ * @route POST /api/interview/resume/pdf/:interviewReportId
  * @description generate resume pdf on the basis of user self description, resume content and job description.
  * @access private
  */
-interviewRouter.post("/resume/pdf/:interviewReportId", authMiddleware.authUserMiddleware, interviewController.generateResumePdfController)
+interviewRouter.post("/resume/pdf/:interviewReportId", authMiddleware.authUserMiddleware, interviewController.generateResumePdfController);
 
-
-
+/**
+ * @route POST /api/interview/prep-guide/pdf/:interviewReportId
+ * @description generate Master Interview Preparation Guide PDF.
+ * @access private
+ */
+interviewRouter.post("/prep-guide/pdf/:interviewReportId", authMiddleware.authUserMiddleware, interviewController.generatePrepGuidePdfController);
 
 module.exports = interviewRouter; 

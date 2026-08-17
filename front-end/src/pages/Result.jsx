@@ -8,7 +8,8 @@ import {
     User, Mail, Phone, MapPin, Linkedin, Github,
     Check, ArrowRight, TrendingUp, ShieldCheck,
     Cpu, Compass, UserCheck, Flame, Layers, ExternalLink,
-    Filter, HelpCircle, ArrowUpRight, CheckSquare, PlusCircle
+    Filter, HelpCircle, ArrowUpRight, CheckSquare, PlusCircle,
+    BookOpen, Terminal, Brain, Calculator, Building2, Download
 } from 'lucide-react';
 import { interviewService } from '../services/interview.service';
 import { useAuth } from '../context/AuthContext';
@@ -112,13 +113,16 @@ const HeroScoreRing = ({ score, role }) => {
 };
 
 // ── Accordion Item ─────────────────────────────────────────────────────────────
-const AccordionItem = ({ title, intention, answer, index }) => {
+const AccordionItem = ({ title, intention, answer, index, tag }) => {
     const [open, setOpen] = useState(index === 0);
     return (
         <div className={`accordion-item ${open ? 'accordion-item--open' : ''}`}>
             <button className="accordion-header" onClick={() => setOpen(!open)} type="button">
                 <span className="accordion-index">Q{index + 1}</span>
-                <span className="accordion-question">{title}</span>
+                <div className="accordion-q-wrapper">
+                    <span className="accordion-question">{title}</span>
+                    {tag && <span className="accordion-tag">{tag}</span>}
+                </div>
                 <span className="accordion-chevron">
                     {open ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                 </span>
@@ -140,16 +144,108 @@ const AccordionItem = ({ title, intention, answer, index }) => {
     );
 };
 
+// ── Curated LeetCode DSA Database ─────────────────────────────────────────────
+const CURATED_DSA_PROBLEMS = [
+    {
+        id: 1,
+        title: "LRU Cache (Least Recently Used)",
+        difficulty: "Medium",
+        pattern: "Hash Map + Doubly Linked List",
+        leetcodeUrl: "https://leetcode.com/problems/lru-cache/",
+        timeComplexity: "O(1) Get / Put",
+        spaceComplexity: "O(Capacity)",
+        approach: "Use a Hash Map for O(1) key lookups mapping to Doubly Linked List nodes. On access or insertion, move node to head (most recent). When capacity is exceeded, evict the tail node."
+    },
+    {
+        id: 2,
+        title: "Top K Frequent Elements",
+        difficulty: "Medium",
+        pattern: "Min-Heap / Bucket Sort",
+        leetcodeUrl: "https://leetcode.com/problems/top-k-frequent-elements/",
+        timeComplexity: "O(N log K) Time",
+        spaceComplexity: "O(N) Space",
+        approach: "Count frequencies with a Hash Map. Maintain a Min-Heap of size K. If heap size exceeds K, pop min frequency. Alternatively, use Bucket Sort with frequency as indices for O(N) linear time."
+    },
+    {
+        id: 3,
+        title: "Course Schedule (Cycle Detection)",
+        difficulty: "Medium",
+        pattern: "Graph BFS / Kahn's Algorithm",
+        leetcodeUrl: "https://leetcode.com/problems/course-schedule/",
+        timeComplexity: "O(V + E) Time",
+        spaceComplexity: "O(V + E) Space",
+        approach: "Build an adjacency list and in-degree array. Push all nodes with in-degree 0 into a Queue. Repeatedly dequeue, reduce neighbors' in-degrees, and enqueue new 0 in-degree nodes. If processed count == total courses, graph is a valid DAG."
+    },
+    {
+        id: 4,
+        title: "Longest Substring Without Repeating Characters",
+        difficulty: "Medium",
+        pattern: "Sliding Window + Hash Set",
+        leetcodeUrl: "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
+        timeComplexity: "O(N) Time",
+        spaceComplexity: "O(min(N, Alphabet))",
+        approach: "Maintain two pointers (left, right) and a character frequency map. Expand right pointer until a duplicate is encountered, then shrink from left until the duplicate is removed, updating max length."
+    },
+    {
+        id: 5,
+        title: "Design Search Autocomplete System",
+        difficulty: "Hard",
+        pattern: "Trie + Priority Queue / Min-Heap",
+        leetcodeUrl: "https://leetcode.com/problems/design-search-autocomplete-system/",
+        timeComplexity: "O(K) Query",
+        spaceComplexity: "O(Alphabet * Total Nodes)",
+        approach: "Implement a Prefix Trie where each TrieNode stores the top 3 historical sentences and frequencies. On typing character, traverse TrieNode in O(1) and return pre-sorted top 3 suggestions."
+    },
+    {
+        id: 6,
+        title: "Trapping Rain Water",
+        difficulty: "Hard",
+        pattern: "Two Pointers / Monotonic Stack",
+        leetcodeUrl: "https://leetcode.com/problems/trapping-rain-water/",
+        timeComplexity: "O(N) Time",
+        spaceComplexity: "O(1) Space",
+        approach: "Use two pointers left and right with leftMax and rightMax variables. Move whichever pointer has the lower boundary, adding max(0, boundary - currentHeight) to total trapped water."
+    }
+];
+
+// ── Curated Aptitude & CS Fundamentals ────────────────────────────────────────
+const APTITUDE_AND_LOGIC = [
+    {
+        id: 1,
+        category: "Quantitative Reasoning",
+        question: "A service processes 1,800 requests per minute with an average response time of 200ms. According to Little's Law (L = λ * W), what is the average number of concurrent requests in the system?",
+        formula: "L = λ (Arrival Rate) * W (Average Latency)",
+        solution: "1. Convert arrival rate to seconds: 1,800 req/min ÷ 60 = 30 req/sec (λ).\n2. Convert latency to seconds: 200ms = 0.2 sec (W).\n3. L = 30 * 0.2 = 6 concurrent in-flight requests on average."
+    },
+    {
+        id: 2,
+        category: "Data Integrity & Hashing",
+        question: "In a distributed system with 4 cache nodes, standard modulo hashing causes ~75% key remappings when 1 node crashes. How does Consistent Hashing solve this?",
+        formula: "Consistent Hashing Ring with Virtual Nodes",
+        solution: "Keys and nodes are mapped onto a 2^32-1 circular hash ring. When a node is added or removed, only K/N keys (where K is total keys and N is nodes) need relocation to the immediate successor node, eliminating massive cache stampedes."
+    },
+    {
+        id: 3,
+        category: "Operating Systems & Concurrency",
+        question: "Explain the four necessary conditions for Deadlock (Coffman Conditions) and how to prevent them in backend code.",
+        formula: "1. Mutual Exclusion  2. Hold & Wait  3. No Preemption  4. Circular Wait",
+        solution: "To prevent deadlocks: (1) Impose a strict global lock acquisition hierarchy (eliminates Circular Wait), (2) Use timeouts on lock acquisition (e.g. Redis Redlock with TTL), (3) Allocate all required resources upfront."
+    }
+];
+
 // ── Navigation Sections ────────────────────────────────────────────────────────
 const SECTIONS = [
     { id: 'overview',     label: 'Persona & Fit Overview', icon: UserCheck },
     { id: 'match',        label: 'Circle Graphs & Scores', icon: BarChart3 },
     { id: 'keywords',     label: 'ATS Keyword Matrix',     icon: Tags },
-    { id: 'parsed',       label: 'Parsed Resume Details',  icon: FileText },
+    { id: 'parsed',       label: 'Parsed Resume Dossier',  icon: FileText },
+    { id: 'rounds',       label: 'Company Hiring Rounds',  icon: Building2 },
+    { id: 'dsa',          label: 'LeetCode & DSA Suite',   icon: Terminal },
     { id: 'technical',    label: 'Technical Q&A Suite',    icon: Zap },
     { id: 'behavioral',   label: 'Behavioral STAR Suite',  icon: Target },
+    { id: 'aptitude',     label: 'Aptitude & CS Basics',   icon: Brain },
     { id: 'skill',        label: 'Skill Gaps & Action',    icon: AlertTriangle },
-    { id: 'preparation',  label: 'Preparation Roadmap',    icon: Calendar },
+    { id: 'preparation',  label: '7-Day Study Roadmap',    icon: Calendar },
 ];
 
 // ── Result Page Component ──────────────────────────────────────────────────────
@@ -159,16 +255,25 @@ const Result = () => {
     const { logout } = useAuth();
 
     const [activeSection, setActiveSection] = useState('overview');
-    const [downloading, setDownloading]     = useState(false);
+    const [downloadingResume, setDownloadingResume] = useState(false);
+    const [downloadingPrepGuide, setDownloadingPrepGuide] = useState(false);
     const [keywordCategoryFilter, setKeywordCategoryFilter] = useState('ALL');
+    const [dsaDifficultyFilter, setDsaDifficultyFilter] = useState('ALL');
+    const [completedTasks, setCompletedTasks] = useState({});
 
     const report = location.state?.report;
 
+    const toggleTask = (dayIndex, taskIndex) => {
+        const key = `${dayIndex}-${taskIndex}`;
+        setCompletedTasks(prev => ({ ...prev, [key]: !prev[key] }));
+    };
+
+    // Download Tailored Resume PDF
     const handleDownloadResume = async () => {
-        if (!report?._id || downloading) return;
+        if (!report?._id || downloadingResume) return;
 
         try {
-            setDownloading(true);
+            setDownloadingResume(true);
             const blob = await interviewService.downloadResume(report._id);
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
@@ -182,7 +287,30 @@ const Result = () => {
             console.error('Download failed:', error);
             alert('Failed to download tailored resume. Please try again.');
         } finally {
-            setDownloading(false);
+            setDownloadingResume(false);
+        }
+    };
+
+    // Download Master Preparation Guide PDF
+    const handleDownloadPrepGuide = async () => {
+        if (!report?._id || downloadingPrepGuide) return;
+
+        try {
+            setDownloadingPrepGuide(true);
+            const blob = await interviewService.downloadPrepGuide(report._id);
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `Master_Prep_Guide_${report.jobRole ? report.jobRole.replace(/\s+/g, '_') : 'Interview'}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Download guide failed:', error);
+            alert('Failed to download Master Preparation Guide. Please try again.');
+        } finally {
+            setDownloadingPrepGuide(false);
         }
     };
 
@@ -245,6 +373,11 @@ const Result = () => {
         return missingKeywords.filter(k => k.category === keywordCategoryFilter);
     }, [missingKeywords, keywordCategoryFilter]);
 
+    const filteredDsaProblems = useMemo(() => {
+        if (dsaDifficultyFilter === 'ALL') return CURATED_DSA_PROBLEMS;
+        return CURATED_DSA_PROBLEMS.filter(p => p.difficulty.toUpperCase() === dsaDifficultyFilter.toUpperCase());
+    }, [dsaDifficultyFilter]);
+
     // ── Render TOC on Left Sidebar ─────────────────────────────────────────────
     const renderSidebarIndex = () => {
         switch (activeSection) {
@@ -256,6 +389,33 @@ const Result = () => {
                         <div className="sidebar-index-item">⭐ Match Fit: {matchScore}%</div>
                         <div className="sidebar-index-item">💼 Experience: {totalExperienceRoles} position(s)</div>
                         <div className="sidebar-index-item">⚡ Key Skills: {candidateSkills.slice(0, 4).join(', ')}</div>
+                    </>
+                );
+            case 'rounds':
+                return (
+                    <>
+                        <div className="sidebar-index-item">Round 1: Screening & OA</div>
+                        <div className="sidebar-index-item">Round 2: Technical Deep Dive</div>
+                        <div className="sidebar-index-item">Round 3: System Architecture</div>
+                        <div className="sidebar-index-item">Round 4: Behavioral & STAR</div>
+                    </>
+                );
+            case 'dsa':
+                return (
+                    <>
+                        <div className="sidebar-index-item">LRU Cache (Hash Map + DLL)</div>
+                        <div className="sidebar-index-item">Top K Frequent (Min-Heap)</div>
+                        <div className="sidebar-index-item">Course Schedule (Graph BFS)</div>
+                        <div className="sidebar-index-item">Longest Substring (Sliding Window)</div>
+                        <div className="sidebar-index-item">Autocomplete System (Trie)</div>
+                    </>
+                );
+            case 'aptitude':
+                return (
+                    <>
+                        <div className="sidebar-index-item">Quantitative: Little's Law & Concurrency</div>
+                        <div className="sidebar-index-item">Distributed: Consistent Hashing</div>
+                        <div className="sidebar-index-item">OS: Coffman Deadlock Conditions</div>
                     </>
                 );
             case 'match':
@@ -463,10 +623,174 @@ const Result = () => {
                     </div>
                 );
 
+            case 'rounds':
+                return (
+                    <div className="rounds-view">
+                        <div className="view-intro">
+                            <p>Standard 4-Stage Interview Process for <strong>{jobRole}</strong> positions at top-tier technology organizations.</p>
+                        </div>
+
+                        <div className="rounds-grid">
+                            <div className="round-card">
+                                <div className="rc-header">
+                                    <span className="rc-step">STAGE 1</span>
+                                    <span className="rc-duration">45 – 60 Mins</span>
+                                </div>
+                                <h3 className="rc-title">Online Assessment & Screening</h3>
+                                <p className="rc-desc">Automated coding test focusing on Data Structures & Algorithms, quantitative aptitude, and core computer science fundamentals.</p>
+                                <div className="rc-focus">
+                                    <strong>🎯 Key Evaluation Areas:</strong>
+                                    <ul>
+                                        <li>2 LeetCode Medium DSA problems (Strings, Arrays, HashMaps).</li>
+                                        <li>15 Multiple choice CS fundamentals (OS, Networks, DB Indexing).</li>
+                                        <li>Code cleaniness, time & space complexity edge cases.</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div className="round-card">
+                                <div className="rc-header">
+                                    <span className="rc-step">STAGE 2</span>
+                                    <span className="rc-duration">60 Mins</span>
+                                </div>
+                                <h3 className="rc-title">Technical Deep Dive & Live Coding</h3>
+                                <p className="rc-desc">1-on-1 collaborative coding session with a Senior Engineer evaluating real-time problem-solving, debugging, and framework internals.</p>
+                                <div className="rc-focus">
+                                    <strong>🎯 Key Evaluation Areas:</strong>
+                                    <ul>
+                                        <li>Node.js / React asynchronous patterns & event loop concurrency.</li>
+                                        <li>Live problem refactoring and modular code design.</li>
+                                        <li>Handling edge cases, error boundaries, and rate limits.</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div className="round-card">
+                                <div className="rc-header">
+                                    <span className="rc-step">STAGE 3</span>
+                                    <span className="rc-duration">60 Mins</span>
+                                </div>
+                                <h3 className="rc-title">System Architecture & Design</h3>
+                                <p className="rc-desc">High-level architecture interview with a Staff/Principal Engineer designing scalable, distributed, low-latency microservices.</p>
+                                <div className="rc-focus">
+                                    <strong>🎯 Key Evaluation Areas:</strong>
+                                    <ul>
+                                        <li>Designing end-to-end RAG pipelines and AI agent state flows.</li>
+                                        <li>Database schema, indexing, Redis caching, and sharding strategies.</li>
+                                        <li>Failure modes, circuit breakers, and horizontal auto-scaling.</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div className="round-card">
+                                <div className="rc-header">
+                                    <span className="rc-step">STAGE 4</span>
+                                    <span className="rc-duration">45 Mins</span>
+                                </div>
+                                <h3 className="rc-title">Executive & Behavioral STAR</h3>
+                                <p className="rc-desc">Interview with the Engineering Manager / Director evaluating culture alignment, conflict resolution, and leadership velocity.</p>
+                                <div className="rc-focus">
+                                    <strong>🎯 Key Evaluation Areas:</strong>
+                                    <ul>
+                                        <li>Past production incidents and root-cause post-mortems.</li>
+                                        <li>Navigating tight sprint deadlines and technical debt.</li>
+                                        <li>Mentoring peers and cross-functional stakeholder alignment.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+
+            case 'dsa':
+                return (
+                    <div className="dsa-view">
+                        <div className="view-intro">
+                            <p>Hand-curated algorithmic coding challenges frequently tested for <strong>{jobRole}</strong> interviews.</p>
+                        </div>
+
+                        {/* Difficulty Filter */}
+                        <div className="dsa-filter-bar">
+                            <span>Filter Difficulty:</span>
+                            {['ALL', 'MEDIUM', 'HARD'].map((diff, i) => (
+                                <button
+                                    key={i}
+                                    type="button"
+                                    className={`dsa-filter-btn ${dsaDifficultyFilter === diff ? 'dsa-filter-btn--active' : ''}`}
+                                    onClick={() => setDsaDifficultyFilter(diff)}
+                                >
+                                    {diff}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="dsa-problems-list">
+                            {filteredDsaProblems.map((prob) => (
+                                <div key={prob.id} className="dsa-problem-card">
+                                    <div className="dsa-p-head">
+                                        <div className="dsa-title-row">
+                                            <h4 className="dsa-title">{prob.title}</h4>
+                                            <span className={`dsa-diff-tag dsa-diff-tag--${prob.difficulty.toLowerCase()}`}>
+                                                {prob.difficulty}
+                                            </span>
+                                        </div>
+                                        <a
+                                            href={prob.leetcodeUrl}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="dsa-lc-link"
+                                        >
+                                            Solve on LeetCode <ExternalLink size={12} />
+                                        </a>
+                                    </div>
+
+                                    <div className="dsa-pattern-badge">
+                                        <strong>Pattern:</strong> {prob.pattern}
+                                    </div>
+
+                                    <div className="dsa-complexities">
+                                        <span className="dsa-comp-pill">⏱️ {prob.timeComplexity}</span>
+                                        <span className="dsa-comp-pill">💾 {prob.spaceComplexity}</span>
+                                    </div>
+
+                                    <div className="dsa-approach">
+                                        <strong>💡 Optimal Solution Blueprint:</strong>
+                                        <p>{prob.approach}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                );
+
+            case 'aptitude':
+                return (
+                    <div className="aptitude-view">
+                        <div className="view-intro">
+                            <p>Quantitative calculations, distributed systems logic, and core CS principles tested in initial screening rounds.</p>
+                        </div>
+
+                        <div className="aptitude-cards-list">
+                            {APTITUDE_AND_LOGIC.map((item) => (
+                                <div key={item.id} className="aptitude-card">
+                                    <div className="apt-head">
+                                        <span className="apt-cat-tag">{item.category}</span>
+                                        <span className="apt-formula-tag">📐 {item.formula}</span>
+                                    </div>
+                                    <h4 className="apt-question">{item.question}</h4>
+                                    <div className="apt-solution">
+                                        <strong>🎯 Step-by-Step Logic Breakdown:</strong>
+                                        <pre>{item.solution}</pre>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                );
+
             case 'match':
                 return (
                     <div className="match-view">
-                        {/* Executive Summary Card */}
                         {summaryAssessment && (
                             <div className="summary-card">
                                 <div className="summary-card-header">
@@ -477,7 +801,6 @@ const Result = () => {
                             </div>
                         )}
 
-                        {/* Circle Graphs Row */}
                         <div className="circle-graphs-section">
                             <div className="cgs-header">
                                 <h3><BarChart3 size={18} /> Detailed Radial Score Gauges</h3>
@@ -514,7 +837,6 @@ const Result = () => {
                             </div>
                         </div>
 
-                        {/* STAR Bullet Point Rewrites */}
                         {bulletSuggestions && bulletSuggestions.length > 0 && (
                             <div className="bullet-section">
                                 <h3 className="section-subtitle">
@@ -543,7 +865,6 @@ const Result = () => {
             case 'keywords':
                 return (
                     <div className="keywords-view">
-                        {/* Summary Metrics Banner */}
                         <div className="keywords-stats-banner">
                             <div className="kw-banner-item">
                                 <span className="kw-banner-val">{matchedKeywords.length}</span>
@@ -569,7 +890,6 @@ const Result = () => {
                             </div>
                         </div>
 
-                        {/* Category Filter Tabs */}
                         <div className="kw-category-filter-bar">
                             <span className="kw-filter-label"><Filter size={14} /> Filter by Domain:</span>
                             <div className="kw-filter-pills">
@@ -586,7 +906,6 @@ const Result = () => {
                             </div>
                         </div>
 
-                        {/* Missing Keywords & Actionable Placement Advice */}
                         <div className="keyword-group">
                             <div className="keyword-group-header">
                                 <h3 className="keyword-group-title text-error">
@@ -616,7 +935,6 @@ const Result = () => {
                             </div>
                         </div>
 
-                        {/* Matched Keywords Grid */}
                         <div className="keyword-group">
                             <div className="keyword-group-header">
                                 <h3 className="keyword-group-title text-success">
@@ -641,7 +959,6 @@ const Result = () => {
             case 'parsed':
                 return (
                     <div className="parsed-view">
-                        {/* Executive Candidate Dossier Header */}
                         <div className="parsed-header-card">
                             <div className="parsed-avatar-box">
                                 <div className="parsed-avatar">
@@ -686,7 +1003,6 @@ const Result = () => {
                                     )}
                                 </div>
 
-                                {/* Quick Metadata Badges */}
                                 <div className="parsed-stats-row">
                                     <span className="p-stat-badge">
                                         <Briefcase size={12} /> {totalExperienceRoles} Experience Position(s)
@@ -706,7 +1022,6 @@ const Result = () => {
                             </div>
                         </div>
 
-                        {/* Executive Summary */}
                         {parsedProfile.summary && (
                             <div className="parsed-section">
                                 <h3 className="parsed-section-title">
@@ -718,7 +1033,6 @@ const Result = () => {
                             </div>
                         )}
 
-                        {/* 4-Quadrant Skills & Competencies Matrix */}
                         <div className="parsed-section">
                             <h3 className="parsed-section-title">
                                 <Code size={16} /> Verified Technical & Competency Matrix
@@ -766,7 +1080,6 @@ const Result = () => {
                             </div>
                         </div>
 
-                        {/* Work Experience Timeline */}
                         {parsedProfile.experience?.length > 0 && (
                             <div className="parsed-section">
                                 <h3 className="parsed-section-title">
@@ -798,7 +1111,6 @@ const Result = () => {
                             </div>
                         )}
 
-                        {/* Engineering Projects Portfolio */}
                         {parsedProfile.projects && parsedProfile.projects.length > 0 && (
                             <div className="parsed-section">
                                 <h3 className="parsed-section-title">
@@ -824,7 +1136,6 @@ const Result = () => {
                             </div>
                         )}
 
-                        {/* Education & Verified Academic Credentials */}
                         {parsedProfile.education?.length > 0 && (
                             <div className="parsed-section">
                                 <h3 className="parsed-section-title">
@@ -933,6 +1244,9 @@ const Result = () => {
             default:
                 return (
                     <div className="timeline-view">
+                        <div className="view-intro">
+                            <p>7-Day Day-by-Day Intensive Preparation Plan. Check off daily milestones as you prepare!</p>
+                        </div>
                         {preparationPlan.length === 0 ? (
                             <p className="result-empty-text">No preparation roadmap generated.</p>
                         ) : (
@@ -944,10 +1258,22 @@ const Result = () => {
                                         </div>
                                         <div className="timeline-content">
                                             <p className="timeline-focus">{day.focus}</p>
-                                            <ul className="timeline-tasks">
-                                                {(day.tasks || day.task || []).map((t, j) => (
-                                                    <li key={j}>{t}</li>
-                                                ))}
+                                            <ul className="timeline-tasks-interactive">
+                                                {(day.tasks || day.task || []).map((t, j) => {
+                                                    const isDone = !!completedTasks[`${i}-${j}`];
+                                                    return (
+                                                        <li
+                                                            key={j}
+                                                            className={`task-interactive-item ${isDone ? 'task-interactive-item--done' : ''}`}
+                                                            onClick={() => toggleTask(i, j)}
+                                                        >
+                                                            <div className="task-checkbox">
+                                                                {isDone ? <Check size={13} className="text-success" /> : null}
+                                                            </div>
+                                                            <span className="task-text">{t}</span>
+                                                        </li>
+                                                    );
+                                                })}
                                             </ul>
                                         </div>
                                     </div>
@@ -968,7 +1294,7 @@ const Result = () => {
                     <span>Dashboard</span>
                 </button>
                 <div className="result-nav-title">
-                    <span>{candidateName}</span> · {jobRole} Evaluation
+                    <span>{candidateName}</span> · {jobRole} Master Preparation Suite
                 </div>
                 <div className="result-nav-right">
                     <ThemeToggle />
@@ -1001,7 +1327,7 @@ const Result = () => {
                     </div>
                 </main>
 
-                {/* ── RIGHT: Hero Score & Section Switchers & Action ── */}
+                {/* ── RIGHT: Hero Score, Master Downloads & Navigation ── */}
                 <aside className="result-col-right">
                     {/* Hero Overall Score Card */}
                     <div className="score-card">
@@ -1017,8 +1343,8 @@ const Result = () => {
                                 <span className="sc-q-label">Tech Qs</span>
                             </div>
                             <div className="sc-q-item">
-                                <span className="sc-q-val">{skillGaps.length}</span>
-                                <span className="sc-q-label">Skill Gaps</span>
+                                <span className="sc-q-val">{CURATED_DSA_PROBLEMS.length}</span>
+                                <span className="sc-q-label">LeetCode Qs</span>
                             </div>
                         </div>
                     </div>
@@ -1041,17 +1367,37 @@ const Result = () => {
                         })}
                     </div>
 
-                    {/* Download AI Resume CTA */}
+                    {/* Download Master Preparation Guide CTA */}
                     <button
-                        className={`download-btn ${downloading ? 'download-btn--loading' : ''}`}
-                        onClick={handleDownloadResume}
-                        disabled={downloading}
+                        className={`download-btn download-btn--prep ${downloadingPrepGuide ? 'download-btn--loading' : ''}`}
+                        onClick={handleDownloadPrepGuide}
+                        disabled={downloadingPrepGuide}
                     >
-                        {downloading ? (
+                        {downloadingPrepGuide ? (
                             <>
                                 <div className="download-btn-shimmer" />
                                 <Loader2 size={18} className="animate-spin" />
-                                <span>GENERATING PDF...</span>
+                                <span>GENERATING PREP GUIDE...</span>
+                            </>
+                        ) : (
+                            <>
+                                <BookOpen size={18} />
+                                <span>DOWNLOAD PREP GUIDE (PDF)</span>
+                            </>
+                        )}
+                    </button>
+
+                    {/* Download AI Resume CTA */}
+                    <button
+                        className={`download-btn download-btn--resume ${downloadingResume ? 'download-btn--loading' : ''}`}
+                        onClick={handleDownloadResume}
+                        disabled={downloadingResume}
+                    >
+                        {downloadingResume ? (
+                            <>
+                                <div className="download-btn-shimmer" />
+                                <Loader2 size={18} className="animate-spin" />
+                                <span>GENERATING RESUME...</span>
                             </>
                         ) : (
                             <>

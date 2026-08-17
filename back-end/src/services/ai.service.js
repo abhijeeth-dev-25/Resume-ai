@@ -758,8 +758,276 @@ Requirements:
     return await generatePdfFromHtml(fallbackHtml);
 }
 
+/**
+ * Generate Master Preparation Guide PDF via Puppeteer
+ */
+async function generatePrepGuidePdf({ report }) {
+    const candidateName = report.parsedProfile?.fullName || "Candidate";
+    const jobRole = report.jobRole || "Target Position";
+    const matchScore = report.matchScore || 85;
+    const techQuestions = report.technicalQuestions || [];
+    const behavioralQuestions = report.behavioralQuestions || [];
+    const prepPlan = report.preparationPlan || [];
+    const skillGaps = report.skillGaps || [];
+    const matchedKeywords = report.matchedKeywords || [];
+
+    const guideHtml = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Master Interview Preparation Guide - ${candidateName}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Inter', Arial, sans-serif;
+    color: #1a1a1a;
+    line-height: 1.55;
+    padding: 24px;
+    font-size: 12px;
+    background: #ffffff;
+  }
+  .header {
+    border-bottom: 2.5px solid #d97706;
+    padding-bottom: 12px;
+    margin-bottom: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .title-group h1 {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0 0 4px;
+    color: #111;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .title-group p {
+    margin: 0;
+    font-size: 11px;
+    color: #666;
+  }
+  .badge-fit {
+    background: #fef3c7;
+    color: #b45309;
+    border: 1px solid #f59e0b;
+    padding: 4px 10px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: right;
+  }
+  .section-title {
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #d97706;
+    border-bottom: 1.5px solid #e5e7eb;
+    padding-bottom: 4px;
+    margin: 18px 0 10px;
+  }
+  .stage-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .stage-box {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 8px;
+    font-size: 10.5px;
+  }
+  .stage-box h4 {
+    margin: 0 0 3px;
+    color: #111;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .card {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    page-break-inside: avoid;
+  }
+  .card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+  .q-title {
+    font-weight: 700;
+    font-size: 11.5px;
+    color: #111;
+  }
+  .q-intent {
+    font-size: 10.5px;
+    color: #4b5563;
+    background: #f3f4f6;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+  }
+  .q-intent strong { color: #d97706; }
+  .q-ans {
+    font-size: 11px;
+    color: #374151;
+    line-height: 1.5;
+  }
+  .dsa-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 12px;
+    font-size: 11px;
+  }
+  .dsa-table th, .dsa-table td {
+    border: 1px solid #e5e7eb;
+    padding: 6px 8px;
+    text-align: left;
+  }
+  .dsa-table th {
+    background: #f3f4f6;
+    font-weight: 700;
+  }
+  .diff-easy { color: #059669; font-weight: 700; }
+  .diff-med { color: #d97706; font-weight: 700; }
+  .diff-hard { color: #dc2626; font-weight: 700; }
+  .day-row {
+    margin-bottom: 8px;
+    border-left: 3px solid #10b981;
+    padding-left: 8px;
+    page-break-inside: avoid;
+  }
+  .day-title {
+    font-weight: 700;
+    font-size: 11.5px;
+    color: #111;
+  }
+  ul { margin: 2px 0 6px; padding-left: 16px; }
+  li { margin-bottom: 2px; font-size: 10.5px; color: #4b5563; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="title-group">
+      <h1>Master Interview Preparation Dossier</h1>
+      <p>Candidate: <strong>${candidateName}</strong> · Target Role: <strong>${jobRole}</strong></p>
+    </div>
+    <div class="badge-fit">
+      Overall Match Fit: ${matchScore}%
+    </div>
+  </div>
+
+  <div class="section-title">1. Standard 4-Stage Company Hiring Process</div>
+  <div class="stage-grid">
+    <div class="stage-box">
+      <h4>Round 1: Screening & OA</h4>
+      <p>60 mins: Aptitude, Data Structures & Core CS fundamentals.</p>
+    </div>
+    <div class="stage-box">
+      <h4>Round 2: Technical Deep Dive</h4>
+      <p>45-60 mins: Live coding, problem solving & framework internals.</p>
+    </div>
+    <div class="stage-box">
+      <h4>Round 3: System Architecture</h4>
+      <p>60 mins: High-level design, database schema, concurrency & caching.</p>
+    </div>
+    <div class="stage-box">
+      <h4>Round 4: Executive & STAR</h4>
+      <p>45 mins: Behavioral scenarios, leadership & culture fit.</p>
+    </div>
+  </div>
+
+  <div class="section-title">2. Curated LeetCode & DSA Problem Suite for ${jobRole}</div>
+  <table class="dsa-table">
+    <thead>
+      <tr>
+        <th>Problem Name</th>
+        <th>Pattern / Category</th>
+        <th>Difficulty</th>
+        <th>Time / Space Complexity</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>LRU Cache</strong></td>
+        <td>Hash Map + Doubly Linked List</td>
+        <td><span class="diff-med">Medium</span></td>
+        <td>O(1) Get / Put · O(capacity)</td>
+      </tr>
+      <tr>
+        <td><strong>Top K Frequent Elements</strong></td>
+        <td>Min-Heap / Bucket Sort</td>
+        <td><span class="diff-med">Medium</span></td>
+        <td>O(N log K) Time · O(N) Space</td>
+      </tr>
+      <tr>
+        <td><strong>Course Schedule (Cycle Detection)</strong></td>
+        <td>Graph Kahn's Algorithm / BFS</td>
+        <td><span class="diff-med">Medium</span></td>
+        <td>O(V + E) Time · O(V + E) Space</td>
+      </tr>
+      <tr>
+        <td><strong>Longest Substring Without Repeating</strong></td>
+        <td>Sliding Window + Hash Set</td>
+        <td><span class="diff-med">Medium</span></td>
+        <td>O(N) Time · O(min(N, M))</td>
+      </tr>
+      <tr>
+        <td><strong>Design Search Autocomplete System</strong></td>
+        <td>Trie + Priority Queue</td>
+        <td><span class="diff-hard">Hard</span></td>
+        <td>O(K) Query · O(Alphabet * N)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">3. Tailored Scenario Technical Q&A Suite</div>
+  ${techQuestions.map((q, i) => `
+    <div class="card">
+      <div class="card-head">
+        <span class="q-title">Q${i + 1}: ${q.question}</span>
+      </div>
+      <div class="q-intent"><strong>💡 Interviewer Intent:</strong> ${q.intention}</div>
+      <div class="q-ans"><strong>🎯 Recommended Answer Strategy:</strong> ${q.answer}</div>
+    </div>
+  `).join('')}
+
+  <div class="section-title">4. Behavioral STAR Methodology Mastery</div>
+  ${behavioralQuestions.map((q, i) => `
+    <div class="card">
+      <div class="card-head">
+        <span class="q-title">Q${i + 1}: ${q.question}</span>
+      </div>
+      <div class="q-intent"><strong>💡 Assessment Objective:</strong> ${q.intention}</div>
+      <div class="q-ans"><strong>🎯 STAR Response Framework:</strong> ${q.answer}</div>
+    </div>
+  `).join('')}
+
+  <div class="section-title">5. 7-Day Day-by-Day Intensive Preparation Plan</div>
+  ${prepPlan.map(day => `
+    <div class="day-row">
+      <div class="day-title">Day ${day.day}: ${day.focus}</div>
+      <ul>
+        ${(day.tasks || day.task || []).map(t => `<li>${t}</li>`).join('')}
+      </ul>
+    </div>
+  `).join('')}
+</body>
+</html>`;
+
+    return await generatePdfFromHtml(guideHtml);
+}
+
 module.exports = {
     generateInterviewReport,
     generateResumePdf,
+    generatePrepGuidePdf,
     interviewGraph
 };
