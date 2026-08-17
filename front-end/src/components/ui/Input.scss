@@ -1,14 +1,14 @@
 .input-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.45rem;
 }
 
 .input-label {
-    font-size: 0.82rem;
-    font-weight: 600;
+    font-size: 0.8rem;
+    font-weight: 700;
     color: var(--text-secondary);
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
 }
 
@@ -20,7 +20,7 @@
 
 .input-icon {
     position: absolute;
-    left: 0.9rem;
+    left: 1rem;
     top: 50%;
     transform: translateY(-50%);
     color: var(--text-muted);
@@ -43,51 +43,52 @@
     outline: none;
     -webkit-appearance: none;
 
-    &::placeholder { color: var(--text-muted); }
+    &::placeholder {
+        color: var(--text-muted);
+        opacity: 0.8;
+    }
 
     &:hover {
-        border-color: rgba(124, 58, 237, 0.4);
+        border-color: rgba(245, 166, 35, 0.4);
     }
 
     &:focus {
         background: var(--bg-input-focus);
         border-color: var(--border-focus);
         box-shadow: 0 0 0 3px var(--accent-glow);
-
-        ~ .input-icon, & + .input-icon {
-            color: var(--accent-light);
-        }
     }
 
     &.input-with-icon {
-        padding-left: 2.6rem;
+        padding-left: 2.75rem;
     }
 
     &.input-error {
         border-color: var(--error);
         background: var(--error-bg);
-        &:focus { box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.2); }
+        &:focus {
+            box-shadow: 0 0 0 3px var(--error-border);
+        }
     }
 }
 
-// Fix icon color when focused (sibling selector trick)
 .input-container:focus-within .input-icon {
-    color: var(--accent-light);
+    color: var(--accent);
 }
 
 .input-textarea {
     resize: vertical;
-    min-height: 120px;
+    min-height: 140px;
     line-height: 1.6;
     padding-top: 0.85rem;
 }
 
 .input-error-msg {
     font-size: 0.8rem;
+    font-weight: 500;
     color: var(--error);
     display: flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.35rem;
     animation: slideDown 0.2s ease;
 }
 

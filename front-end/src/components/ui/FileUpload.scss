@@ -1,20 +1,20 @@
 .file-upload-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.45rem;
 }
 
 .file-upload-zone {
     border: 2px dashed var(--border-color);
     border-radius: var(--radius-lg);
-    padding: 1.5rem 1.25rem;
+    padding: 1.75rem 1.25rem;
     cursor: pointer;
     transition: all var(--transition);
     background: var(--bg-input);
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 130px;
+    min-height: 140px;
     outline: none;
     position: relative;
     overflow: hidden;
@@ -22,6 +22,7 @@
     &:hover {
         border-color: var(--accent);
         background: var(--bg-input-focus);
+        transform: translateY(-1px);
     }
 
     &:focus-visible {
@@ -29,18 +30,21 @@
     }
 
     &--dragging {
-        border-color: var(--accent-light);
+        border-color: var(--accent);
         background: var(--bg-input-focus);
-        box-shadow: 0 0 0 4px var(--accent-glow), inset 0 0 30px rgba(124, 58, 237, 0.05);
+        box-shadow: 0 0 0 4px var(--accent-glow), inset 0 0 30px rgba(245, 166, 35, 0.1);
         animation: pulse-ring 1.4s ease-in-out infinite;
     }
 
     &--filled {
         cursor: default;
         border-style: solid;
-        border-color: var(--success);
+        border-color: var(--success-border);
         background: var(--success-bg);
-        &:hover { border-color: var(--success); }
+        &:hover {
+            border-color: var(--success);
+            transform: none;
+        }
     }
 
     &--error {
@@ -62,26 +66,32 @@
 }
 
 .file-upload-icon {
-    width: 52px;
-    height: 52px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     background: var(--accent-glow);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--accent-light);
+    color: var(--accent);
     margin-bottom: 0.25rem;
-    transition: transform var(--transition);
+    transition: transform var(--transition), background var(--transition);
 
     .file-upload-zone:hover & {
-        transform: translateY(-3px);
+        transform: translateY(-3px) scale(1.05);
+        background: rgba(245, 166, 35, 0.25);
     }
 }
 
 .file-upload-text {
-    font-size: 0.9rem;
+    font-size: 0.92rem;
+    font-weight: 500;
     color: var(--text-secondary);
-    strong { color: var(--accent-light); }
+
+    strong {
+        color: var(--accent);
+        font-weight: 700;
+    }
 }
 
 .file-upload-subtext {
@@ -92,15 +102,18 @@
 .file-upload-filled {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.85rem;
     width: 100%;
-    padding: 0 0.25rem;
+    padding: 0 0.5rem;
 }
 
 .file-upload-file-icon {
     color: var(--success);
     flex-shrink: 0;
     display: flex;
+    background: rgba(38, 184, 112, 0.15);
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
 }
 
 .file-upload-file-info {
@@ -123,6 +136,7 @@
 .file-upload-filesize {
     font-size: 0.75rem;
     color: var(--text-muted);
+    font-weight: 500;
 }
 
 .file-upload-remove {
@@ -130,8 +144,8 @@
     border: 1px solid var(--error-border);
     border-radius: var(--radius-sm);
     color: var(--error);
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -142,7 +156,8 @@
 
     &:hover {
         background: var(--error);
-        color: #fff;
+        color: #ffffff;
+        transform: scale(1.05);
     }
 }
 
@@ -151,6 +166,6 @@
     color: var(--error);
     display: flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.35rem;
     animation: slideDown 0.2s ease;
 }
