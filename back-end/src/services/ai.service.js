@@ -759,13 +759,19 @@ function buildFullAtsResumeHtml({
     margin: 0;
     padding: 0;
   }
+  html, body {
+    height: 100%;
+  }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     color: #111827;
-    line-height: 1.38;
-    font-size: 9pt;
+    line-height: 1.44;
+    font-size: 9.2pt;
     background: #ffffff;
     -webkit-print-color-adjust: exact;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
   
   /* Header */
@@ -773,10 +779,10 @@ function buildFullAtsResumeHtml({
     text-align: center;
     border-bottom: 2.2px solid #0f172a;
     padding-bottom: 5px;
-    margin-bottom: 7px;
+    margin-bottom: 6px;
   }
   .header h1 {
-    font-size: 20pt;
+    font-size: 20.5pt;
     font-weight: 800;
     color: #0f172a;
     letter-spacing: 0.6px;
@@ -785,7 +791,7 @@ function buildFullAtsResumeHtml({
     margin-bottom: 2px;
   }
   .header .target-role {
-    font-size: 9.6pt;
+    font-size: 9.8pt;
     font-weight: 700;
     color: #d97706;
     text-transform: uppercase;
@@ -793,7 +799,7 @@ function buildFullAtsResumeHtml({
     margin-bottom: 3px;
   }
   .header .contact-bar {
-    font-size: 8.4pt;
+    font-size: 8.6pt;
     color: #475569;
     display: flex;
     justify-content: center;
@@ -808,23 +814,23 @@ function buildFullAtsResumeHtml({
 
   /* Section Styles */
   .section {
-    margin-bottom: 7px;
+    margin-bottom: 4px;
   }
   .section-title {
-    font-size: 9.4pt;
+    font-size: 9.6pt;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.8px;
     color: #0f172a;
     border-bottom: 1.3px solid #cbd5e1;
     padding-bottom: 2px;
-    margin-bottom: 4.5px;
+    margin-bottom: 4px;
   }
   
   /* Summary */
   .summary-text {
-    font-size: 8.7pt;
-    line-height: 1.38;
+    font-size: 8.9pt;
+    line-height: 1.42;
     color: #334155;
     text-align: justify;
   }
@@ -833,10 +839,10 @@ function buildFullAtsResumeHtml({
   .skills-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 8.6pt;
+    font-size: 8.8pt;
   }
   .skills-table td {
-    padding: 1.8px 0;
+    padding: 2.2px 0;
     vertical-align: top;
   }
   .skills-label {
@@ -847,12 +853,12 @@ function buildFullAtsResumeHtml({
   .skills-content {
     width: 76%;
     color: #334155;
-    line-height: 1.32;
+    line-height: 1.36;
   }
 
   /* Experience & Projects */
   .entry {
-    margin-bottom: 5.5px;
+    margin-bottom: 6px;
   }
   .entry:last-child {
     margin-bottom: 0;
@@ -861,20 +867,20 @@ function buildFullAtsResumeHtml({
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    margin-bottom: 1.5px;
+    margin-bottom: 2px;
   }
   .entry-title {
-    font-size: 9.1pt;
+    font-size: 9.3pt;
     font-weight: 700;
     color: #0f172a;
   }
   .entry-subtitle {
-    font-size: 8.8pt;
+    font-size: 9pt;
     font-weight: 600;
     color: #d97706;
   }
   .entry-date {
-    font-size: 8.3pt;
+    font-size: 8.5pt;
     font-weight: 600;
     color: #64748b;
   }
@@ -883,15 +889,15 @@ function buildFullAtsResumeHtml({
   ul.bullets {
     list-style: none;
     padding-left: 0;
-    margin: 1.5px 0 0 0;
+    margin: 2px 0 0 0;
   }
   ul.bullets li {
     position: relative;
-    padding-left: 11px;
-    font-size: 8.5pt;
-    line-height: 1.34;
+    padding-left: 12px;
+    font-size: 8.7pt;
+    line-height: 1.38;
     color: #334155;
-    margin-bottom: 2px;
+    margin-bottom: 2.5px;
     text-align: justify;
   }
   ul.bullets li::before {
@@ -919,32 +925,32 @@ function buildFullAtsResumeHtml({
     vertical-align: top;
   }
   .two-col-cell:first-child {
-    padding-right: 10px;
+    padding-right: 12px;
   }
   .two-col-cell:last-child {
-    padding-left: 10px;
+    padding-left: 12px;
   }
   .edu-degree {
-    font-size: 8.8pt;
+    font-size: 9pt;
     font-weight: 700;
     color: #0f172a;
   }
   .edu-inst {
-    font-size: 8.4pt;
+    font-size: 8.6pt;
     color: #d97706;
     font-weight: 600;
   }
   .edu-detail {
-    font-size: 8pt;
+    font-size: 8.2pt;
     color: #64748b;
-    line-height: 1.28;
-    margin-top: 1.5px;
+    line-height: 1.32;
+    margin-top: 2px;
   }
   .cert-item {
-    font-size: 8.4pt;
+    font-size: 8.6pt;
     color: #334155;
-    margin-bottom: 2px;
-    line-height: 1.28;
+    margin-bottom: 2.5px;
+    line-height: 1.32;
   }
 </style>
 </head>

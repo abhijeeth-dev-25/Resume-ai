@@ -807,14 +807,17 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                             className="preview-canvas-scroller" 
                             style={{ 
                                 width: `${a4BaseWidth * effectiveScale}px`,
-                                height: `${a4BaseHeight * effectiveScale}px`
+                                height: `${a4BaseHeight * effectiveScale}px`,
+                                margin: '0 auto'
                             }}
                         >
                             <article 
                                 className="a4-resume-sheet"
                                 style={{
                                     transform: `scale(${effectiveScale})`,
-                                    transformOrigin: 'top left'
+                                    transformOrigin: 'top center',
+                                    left: '50%',
+                                    marginLeft: `-${a4BaseWidth / 2}px`
                                 }}
                             >
                                 {/* Header */}
