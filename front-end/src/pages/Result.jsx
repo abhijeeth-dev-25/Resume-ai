@@ -641,43 +641,108 @@ const Result = () => {
             case 'parsed':
                 return (
                     <div className="parsed-view">
+                        {/* Executive Candidate Dossier Header */}
                         <div className="parsed-header-card">
-                            <div className="parsed-avatar">
-                                <User size={26} />
+                            <div className="parsed-avatar-box">
+                                <div className="parsed-avatar">
+                                    <User size={30} />
+                                </div>
+                                <span className="parsed-status-dot" title="Digitized & Verified">✓</span>
                             </div>
+
                             <div className="parsed-header-info">
-                                <h2>{candidateName}</h2>
+                                <div className="parsed-name-row">
+                                    <h2>{candidateName}</h2>
+                                    <span className="parsed-role-tag">
+                                        <Briefcase size={12} /> {jobRole}
+                                    </span>
+                                </div>
+
                                 <div className="parsed-contact-row">
-                                    {parsedProfile.email && <span><Mail size={13} /> {parsedProfile.email}</span>}
-                                    {parsedProfile.phone && <span><Phone size={13} /> {parsedProfile.phone}</span>}
-                                    {parsedProfile.location && <span><MapPin size={13} /> {parsedProfile.location}</span>}
+                                    {parsedProfile.email && (
+                                        <a href={`mailto:${parsedProfile.email}`} className="parsed-contact-item">
+                                            <Mail size={13} /> {parsedProfile.email}
+                                        </a>
+                                    )}
+                                    {parsedProfile.phone && (
+                                        <a href={`tel:${parsedProfile.phone}`} className="parsed-contact-item">
+                                            <Phone size={13} /> {parsedProfile.phone}
+                                        </a>
+                                    )}
+                                    {parsedProfile.location && (
+                                        <span className="parsed-contact-item">
+                                            <MapPin size={13} /> {parsedProfile.location}
+                                        </span>
+                                    )}
+                                    {parsedProfile.linkedin && (
+                                        <a href={parsedProfile.linkedin} target="_blank" rel="noreferrer" className="parsed-contact-item parsed-contact-item--link">
+                                            <Linkedin size={13} /> LinkedIn <ArrowUpRight size={11} />
+                                        </a>
+                                    )}
+                                    {parsedProfile.github && (
+                                        <a href={parsedProfile.github} target="_blank" rel="noreferrer" className="parsed-contact-item parsed-contact-item--link">
+                                            <Github size={13} /> GitHub <ArrowUpRight size={11} />
+                                        </a>
+                                    )}
+                                </div>
+
+                                {/* Quick Metadata Badges */}
+                                <div className="parsed-stats-row">
+                                    <span className="p-stat-badge">
+                                        <Briefcase size={12} /> {totalExperienceRoles} Experience Position(s)
+                                    </span>
+                                    <span className="p-stat-badge">
+                                        <Code size={12} /> {candidateSkills.length + candidateTools.length} Extracted Skills
+                                    </span>
+                                    <span className="p-stat-badge">
+                                        <Layers size={12} /> {parsedProfile.projects?.length || 3} Highlighted Projects
+                                    </span>
+                                    {parsedProfile.education?.[0] && (
+                                        <span className="p-stat-badge">
+                                            <GraduationCap size={12} /> {parsedProfile.education[0].degree}
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                         </div>
 
+                        {/* Executive Summary */}
                         {parsedProfile.summary && (
                             <div className="parsed-section">
-                                <h3 className="parsed-section-title"><User size={15} /> Professional Summary</h3>
-                                <p className="parsed-summary-text">{parsedProfile.summary}</p>
+                                <h3 className="parsed-section-title">
+                                    <FileText size={16} /> Executive Profile & Career Summary
+                                </h3>
+                                <div className="parsed-summary-box">
+                                    <p>{parsedProfile.summary}</p>
+                                </div>
                             </div>
                         )}
 
+                        {/* 4-Quadrant Skills & Competencies Matrix */}
                         <div className="parsed-section">
-                            <h3 className="parsed-section-title"><Code size={15} /> Extracted Skills Inventory</h3>
+                            <h3 className="parsed-section-title">
+                                <Code size={16} /> Verified Technical & Competency Matrix
+                            </h3>
                             <div className="parsed-skills-grid">
                                 {candidateSkills.length > 0 && (
                                     <div className="psg-block">
-                                        <h4>Hard & Technical Skills</h4>
+                                        <div className="psg-head">
+                                            <Code size={15} className="text-accent" />
+                                            <h4>Languages & Core Technical Skills</h4>
+                                        </div>
                                         <div className="psg-tags">
                                             {candidateSkills.map((s, i) => (
-                                                <span key={i} className="psg-tag">{s}</span>
+                                                <span key={i} className="psg-tag psg-tag--skill">{s}</span>
                                             ))}
                                         </div>
                                     </div>
                                 )}
                                 {candidateTools.length > 0 && (
                                     <div className="psg-block">
-                                        <h4>Frameworks & Tools</h4>
+                                        <div className="psg-head">
+                                            <Layers size={15} className="text-violet" />
+                                            <h4>Frameworks, Tools & Cloud</h4>
+                                        </div>
                                         <div className="psg-tags">
                                             {candidateTools.map((t, i) => (
                                                 <span key={i} className="psg-tag psg-tag--tool">{t}</span>
@@ -685,21 +750,40 @@ const Result = () => {
                                         </div>
                                     </div>
                                 )}
+                                {parsedProfile.softSkills?.length > 0 && (
+                                    <div className="psg-block">
+                                        <div className="psg-head">
+                                            <UserCheck size={15} className="text-success" />
+                                            <h4>Leadership & Domain Methodologies</h4>
+                                        </div>
+                                        <div className="psg-tags">
+                                            {parsedProfile.softSkills.map((m, i) => (
+                                                <span key={i} className="psg-tag psg-tag--soft">{m}</span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
+                        {/* Work Experience Timeline */}
                         {parsedProfile.experience?.length > 0 && (
                             <div className="parsed-section">
-                                <h3 className="parsed-section-title"><Briefcase size={15} /> Work Experience</h3>
+                                <h3 className="parsed-section-title">
+                                    <Briefcase size={16} /> Work Experience & Career Journey
+                                </h3>
                                 <div className="parsed-exp-list">
                                     {parsedProfile.experience.map((exp, i) => (
                                         <div key={i} className="parsed-exp-card">
                                             <div className="parsed-exp-head">
-                                                <div>
+                                                <div className="pex-role-group">
                                                     <h4 className="parsed-exp-role">{exp.title}</h4>
                                                     <span className="parsed-exp-company">{exp.company}</span>
                                                 </div>
-                                                <span className="parsed-exp-duration">{exp.duration}</span>
+                                                <div className="pex-meta-group">
+                                                    <span className="parsed-exp-duration">{exp.duration}</span>
+                                                    {exp.location && <span className="parsed-exp-loc">{exp.location}</span>}
+                                                </div>
                                             </div>
                                             {exp.highlights?.length > 0 && (
                                                 <ul className="parsed-exp-highlights">
@@ -714,16 +798,48 @@ const Result = () => {
                             </div>
                         )}
 
+                        {/* Engineering Projects Portfolio */}
+                        {parsedProfile.projects && parsedProfile.projects.length > 0 && (
+                            <div className="parsed-section">
+                                <h3 className="parsed-section-title">
+                                    <Layers size={16} /> Featured Engineering Projects & AI Systems
+                                </h3>
+                                <div className="parsed-projects-grid">
+                                    {parsedProfile.projects.map((proj, i) => (
+                                        <div key={i} className="parsed-project-card">
+                                            <div className="ppc-header">
+                                                <h4 className="ppc-name">{proj.name}</h4>
+                                            </div>
+                                            <p className="ppc-desc">{proj.description}</p>
+                                            {proj.technologies?.length > 0 && (
+                                                <div className="ppc-techs">
+                                                    {proj.technologies.map((tech, j) => (
+                                                        <span key={j} className="ppc-tech-tag">{tech}</span>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Education & Verified Academic Credentials */}
                         {parsedProfile.education?.length > 0 && (
                             <div className="parsed-section">
-                                <h3 className="parsed-section-title"><GraduationCap size={15} /> Education & Credentials</h3>
+                                <h3 className="parsed-section-title">
+                                    <GraduationCap size={16} /> Education & Verified Credentials
+                                </h3>
                                 <div className="parsed-edu-grid">
                                     {parsedProfile.education.map((edu, i) => (
                                         <div key={i} className="parsed-edu-card">
-                                            <h4>{edu.degree}</h4>
+                                            <div className="pec-head">
+                                                <GraduationCap size={18} className="text-accent" />
+                                                <h4>{edu.degree}</h4>
+                                            </div>
                                             <p className="pe-school">{edu.institution}</p>
                                             <span className="pe-year">{edu.year}</span>
-                                            {edu.details && <small className="pe-details">{edu.details}</small>}
+                                            {edu.details && <p className="pe-details">{edu.details}</p>}
                                         </div>
                                     ))}
                                 </div>
