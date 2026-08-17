@@ -43,5 +43,16 @@ export const interviewService = {
             responseType: 'blob'
         });
         return response.data;
+    },
+
+    /**
+     * Download customized tailored resume PDF from live studio data
+     * @param {object} customData
+     */
+    downloadCustomResume: async (customData) => {
+        const response = await api.post('/interview/resume/custom-pdf', customData, {
+            responseType: 'blob'
+        });
+        return response.data;
     }
 };

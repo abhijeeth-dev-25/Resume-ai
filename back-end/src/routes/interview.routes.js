@@ -28,6 +28,13 @@ interviewRouter.get("/my-reports", authMiddleware.authUserMiddleware, interviewC
 interviewRouter.post("/resume/pdf/:interviewReportId", authMiddleware.authUserMiddleware, interviewController.generateResumePdfController);
 
 /**
+ * @route POST /api/interview/resume/custom-pdf
+ * @description generate customized resume pdf from live studio editor.
+ * @access private
+ */
+interviewRouter.post("/resume/custom-pdf", authMiddleware.authUserMiddleware, interviewController.generateCustomResumePdfController);
+
+/**
  * @route POST /api/interview/prep-guide/pdf/:interviewReportId
  * @description generate Master Interview Preparation Guide PDF.
  * @access private

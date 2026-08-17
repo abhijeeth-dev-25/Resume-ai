@@ -1,5 +1,5 @@
 const pdfParse = require("pdf-parse");
-const { generateInterviewReport, generateResumePdf, generatePrepGuidePdf } = require("../services/ai.service");
+const { generateInterviewReport, generateResumePdf, generateCustomResumePdf, generatePrepGuidePdf } = require("../services/ai.service");
 const interviewReportModel = require("../models/interviewReport.model");
 
 /**
@@ -156,6 +156,31 @@ async function generateResumePdfController(req, res) {
 }
 
 /**
+ * @name generateCustomResumePdfController
+ * @description Generate custom tailored resume PDF from user-edited live studio data.
+ * @access Private
+ */
+async function generateCustomResumePdfController(req, res) {
+    try {
+        const customData = req.body || {};
+        const pdfBuffer = await generateCustomResumePdf(customData);
+
+        res.set({
+            "Content-Type": "application/pdf",
+            "Content-Disposition": `attachment; filename=custom_tailored_resume.pdf`
+        });
+
+        return res.send(pdfBuffer);
+    } catch (error) {
+        console.error("generateCustomResumePdfController error:", error);
+        return res.status(500).json({
+            message: "Failed to generate custom resume PDF",
+            error: error.message
+        });
+    }
+}
+
+/**
  * @name generatePrepGuidePdfController
  * @description Generate Master Interview Preparation Guide PDF based on interview report.
  * @access Private
@@ -195,5 +220,6 @@ module.exports = {
     getMyReportsController,
     getAllInterviewReportsController,
     generateResumePdfController,
+    generateCustomResumePdfController,
     generatePrepGuidePdfController
 };

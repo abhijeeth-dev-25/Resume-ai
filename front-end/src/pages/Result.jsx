@@ -9,12 +9,14 @@ import {
     Check, ArrowRight, TrendingUp, ShieldCheck,
     Cpu, Compass, UserCheck, Flame, Layers, ExternalLink,
     Filter, HelpCircle, ArrowUpRight, CheckSquare, PlusCircle,
-    BookOpen, Terminal, Brain, Calculator, Building2, Download
+    BookOpen, Terminal, Brain, Calculator, Building2, Download,
+    Eye, Edit3
 } from 'lucide-react';
 import { interviewService } from '../services/interview.service';
 import { useAuth } from '../context/AuthContext';
 import Button from '../components/ui/Button';
 import ThemeToggle from '../components/ui/ThemeToggle';
+import ResumeStudioModal from '../components/ResumeStudioModal';
 import './Result.scss';
 
 // ── Circular Gauge Component (Circle Graph) ──────────────────────────────────
@@ -403,6 +405,7 @@ const Result = () => {
     const { logout } = useAuth();
 
     const [activeSection, setActiveSection] = useState('overview');
+    const [isStudioOpen, setIsStudioOpen] = useState(false);
     const [downloadingResume, setDownloadingResume] = useState(false);
     const [downloadingPrepGuide, setDownloadingPrepGuide] = useState(false);
     const [keywordCategoryFilter, setKeywordCategoryFilter] = useState('ALL');
@@ -1467,24 +1470,15 @@ const Result = () => {
                     {/* Primary Download Hub */}
                     <div className="sidebar-downloads-box">
                         <span className="sdb-title">Download & Export</span>
+                        
+                        {/* Live Studio Preview & Edit Button */}
                         <button
-                            className={`download-btn download-btn--prep ${downloadingPrepGuide ? 'download-btn--loading' : ''}`}
-                            onClick={handleDownloadPrepGuide}
-                            disabled={downloadingPrepGuide}
+                            className="download-btn download-btn--studio"
+                            onClick={() => setIsStudioOpen(true)}
                             type="button"
                         >
-                            {downloadingPrepGuide ? (
-                                <>
-                                    <div className="download-btn-shimmer" />
-                                    <Loader2 size={15} className="animate-spin" />
-                                    <span>Generating Guide...</span>
-                                </>
-                            ) : (
-                                <>
-                                    <BookOpen size={15} />
-                                    <span>Prep Guide (PDF)</span>
-                                </>
-                            )}
+                            <Eye size={15} />
+                            <span>Preview & Edit Resume</span>
                         </button>
 
                         <button
@@ -1503,6 +1497,26 @@ const Result = () => {
                                 <>
                                     <Sparkles size={15} />
                                     <span>Tailored Resume (PDF)</span>
+                                </>
+                            )}
+                        </button>
+
+                        <button
+                            className={`download-btn download-btn--prep ${downloadingPrepGuide ? 'download-btn--loading' : ''}`}
+                            onClick={handleDownloadPrepGuide}
+                            disabled={downloadingPrepGuide}
+                            type="button"
+                        >
+                            {downloadingPrepGuide ? (
+                                <>
+                                    <div className="download-btn-shimmer" />
+                                    <Loader2 size={15} className="animate-spin" />
+                                    <span>Generating Guide...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <BookOpen size={15} />
+                                    <span>Prep Guide (PDF)</span>
                                 </>
                             )}
                         </button>
@@ -1571,6 +1585,13 @@ const Result = () => {
                     </div>
                 </aside>
             </div>
+
+            {/* ── Interactive Live Resume Studio (Preview & In-Place Editor) ── */}
+            <ResumeStudioModal
+                isOpen={isStudioOpen}
+                onClose={() => setIsStudioOpen(false)}
+                report={report}
+            />
         </div>
     );
 };
