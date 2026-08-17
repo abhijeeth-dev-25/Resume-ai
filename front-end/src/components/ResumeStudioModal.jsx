@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
     X, Download, RotateCcw, Eye, Edit3, User, Briefcase, 
     Sparkles, GraduationCap, Award, Plus, Trash2, CheckCircle2, 
-    Loader2, ZoomIn, ZoomOut, Maximize2, Trophy, Star
+    Loader2, ZoomIn, ZoomOut, Maximize2, Trophy, Star, MoveHorizontal, GripVertical
 } from 'lucide-react';
 import { interviewService } from '../services/interview.service';
 import './ResumeStudioModal.scss';
@@ -123,12 +123,53 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
     const [activeTab, setActiveTab] = useState('personal');
     const [downloading, setDownloading] = useState(false);
     const [zoomLevel, setZoomLevel] = useState(1);
+    const [splitPercent, setSplitPercent] = useState(50);
+    const [isDragging, setIsDragging] = useState(false);
 
     const handleReset = () => {
         if (window.confirm("Reset all resume edits back to AI defaults?")) {
             setResumeData(buildInitialData());
         }
     };
+
+    // Resizer Dragging Handlers
+    const handleMouseDown = (e) => {
+        e.preventDefault();
+        setIsDragging(true);
+    };
+
+    useEffect(() => {
+        const handleMouseMove = (e) => {
+            if (!isDragging) return;
+            const newPercent = (e.clientX / window.innerWidth) * 100;
+            if (newPercent >= 22 && newPercent <= 78) {
+                setSplitPercent(newPercent);
+            }
+        };
+
+        const handleMouseUp = () => {
+            if (isDragging) {
+                setIsDragging(false);
+            }
+        };
+
+        if (isDragging) {
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', handleMouseUp);
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+        } else {
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+        }
+
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+        };
+    }, [isDragging]);
 
     const handleDownloadCustom = async () => {
         try {
@@ -199,7 +240,7 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                         </div>
                         <div className="st-title-wrap">
                             <h2>Interactive Resume Studio</h2>
-                            <span className="st-subtitle">Live Preview · Real-Time ATS Editing · 100% Single-Page A4 Precision</span>
+                            <span className="st-subtitle">Live Preview · Real-Time ATS Editing · Drag & Resize Workspace</span>
                         </div>
                     </div>
 
@@ -260,7 +301,12 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                 </header>
 
                 {/* ── Studio Split View ── */}
-                <div className="studio-body">
+                <div 
+                    className="studio-body"
+                    style={{
+                        gridTemplateColumns: `${splitPercent}% 10px calc(100% - ${splitPercent}% - 10px)`
+                    }}
+                >
                     {/* ── LEFT PANEL: Form Editor ── */}
                     <aside className="studio-editor-panel">
                         <nav className="editor-nav-tabs">
@@ -719,6 +765,19 @@ export default function ResumeStudioModal({ isOpen, onClose, report }) {
                             )}
                         </div>
                     </aside>
+
+                    {/* ── INTERACTIVE DRAGGABLE RESIZER (<->) ── */}
+                    <div 
+                        className={`studio-splitter ${isDragging ? 'dragging' : ''}`}
+                        onMouseDown={handleMouseDown}
+                        title="Click & Drag to resize Editor / Preview panels (<->)"
+                    >
+                        <div className="splitter-handle">
+                            <span className="splitter-arrow">‹</span>
+                            <div className="splitter-grip-dots" />
+                            <span className="splitter-arrow">›</span>
+                        </div>
+                    </div>
 
                     {/* ── RIGHT PANEL: Real-time Live A4 Document Canvas ── */}
                     <main className="studio-preview-panel">
