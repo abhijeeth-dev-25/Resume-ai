@@ -1287,41 +1287,16 @@ const Result = () => {
 
     return (
         <div className="result-layout">
-            {/* ── Navbar with Always-Visible Quick Actions ── */}
+            {/* ── Clean, Minimalist Navbar ── */}
             <header className="result-nav glass-panel">
                 <button className="result-nav-back" onClick={() => navigate('/')} type="button">
                     <ArrowLeft size={16} />
                     <span>Dashboard</span>
                 </button>
                 <div className="result-nav-title">
-                    <span>{candidateName}</span> · {jobRole} Master Suite
+                    <span>{candidateName}</span> · Candidate Report
                 </div>
-                
-                {/* ── Quick Action Download Pills in Navbar (Always Visible) ── */}
                 <div className="result-nav-right">
-                    <div className="nav-downloads-group">
-                        <button
-                            className="nav-dl-btn nav-dl-btn--prep"
-                            onClick={handleDownloadPrepGuide}
-                            disabled={downloadingPrepGuide}
-                            title="Download Master Interview Preparation Guide PDF"
-                            type="button"
-                        >
-                            {downloadingPrepGuide ? <Loader2 size={13} className="animate-spin" /> : <BookOpen size={13} />}
-                            <span>Prep Guide PDF</span>
-                        </button>
-                        <button
-                            className="nav-dl-btn nav-dl-btn--resume"
-                            onClick={handleDownloadResume}
-                            disabled={downloadingResume}
-                            title="Download Tailored ATS Resume PDF"
-                            type="button"
-                        >
-                            {downloadingResume ? <Loader2 size={13} className="animate-spin" /> : <Sparkles size={13} />}
-                            <span>Tailored Resume</span>
-                        </button>
-                    </div>
-
                     <ThemeToggle />
                     <Button variant="secondary" size="sm" onClick={logout}>Logout</Button>
                 </div>
@@ -1331,7 +1306,7 @@ const Result = () => {
             <div className="result-3col">
                 {/* ── LEFT: Master Downloads & TOC Index ── */}
                 <aside className="result-col-left">
-                    {/* Primary Download Kits (Moved to Left Sidebar for Instant Access) */}
+                    {/* Primary Download Hub */}
                     <div className="sidebar-downloads-box">
                         <span className="sdb-title">Download & Export</span>
                         <button
@@ -1343,13 +1318,13 @@ const Result = () => {
                             {downloadingPrepGuide ? (
                                 <>
                                     <div className="download-btn-shimmer" />
-                                    <Loader2 size={16} className="animate-spin" />
-                                    <span>GENERATING GUIDE...</span>
+                                    <Loader2 size={15} className="animate-spin" />
+                                    <span>Generating Guide...</span>
                                 </>
                             ) : (
                                 <>
-                                    <BookOpen size={16} />
-                                    <span>PREPARATION GUIDE (PDF)</span>
+                                    <BookOpen size={15} />
+                                    <span>Prep Guide (PDF)</span>
                                 </>
                             )}
                         </button>
@@ -1363,13 +1338,13 @@ const Result = () => {
                             {downloadingResume ? (
                                 <>
                                     <div className="download-btn-shimmer" />
-                                    <Loader2 size={16} className="animate-spin" />
-                                    <span>GENERATING RESUME...</span>
+                                    <Loader2 size={15} className="animate-spin" />
+                                    <span>Generating Resume...</span>
                                 </>
                             ) : (
                                 <>
-                                    <Sparkles size={16} />
-                                    <span>TAILORED RESUME (PDF)</span>
+                                    <Sparkles size={15} />
+                                    <span>Tailored Resume (PDF)</span>
                                 </>
                             )}
                         </button>
